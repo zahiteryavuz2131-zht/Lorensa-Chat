@@ -1,0 +1,4448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorensa Chat - İletişim Platformu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --bg-dark: #0a0a1a;
+            --bg-channel: #1a1a2e;
+            --bg-chat: #16213e;
+            --bg-input: #0f3460;
+            --bg-hover: rgba(255,255,255,0.06);
+            --bg-active: rgba(83,82,237,0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #b8c4d4;
+            --text-muted: #6b7b8d;
+            --accent: #5352ed;
+            --accent-hover: #6c6bf0;
+            --accent-dark: #3d3cb8;
+            --green: #2ed573;
+            --red: #ff4757;
+            --yellow: #ffa502;
+            --orange: #ff6348;
+            --border: rgba(255,255,255,0.08);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-xs: 4px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f0f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e8e8f0;
+            --bg-dark: #d5d5e0;
+            --bg-channel: #f0f0f5;
+            --bg-chat: #ffffff;
+            --bg-input: #e8e8f0;
+            --bg-hover: rgba(0,0,0,0.04);
+            --bg-active: rgba(83,82,237,0.15);
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #8888aa;
+            --border: rgba(0,0,0,0.1);
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* ===== AUTH SCREENS ===== */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .auth-bg-animation .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(83,82,237,0.15), transparent);
+            animation: floatCircle 20s infinite ease-in-out;
+        }
+
+        .auth-bg-animation .circle:nth-child(1) { width: 400px; height: 400px; top: -100px; left: -100px; animation-delay: 0s; }
+        .auth-bg-animation .circle:nth-child(2) { width: 300px; height: 300px; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .auth-bg-animation .circle:nth-child(3) { width: 200px; height: 200px; top: 50%; left: 50%; animation-delay: -10s; }
+        .auth-bg-animation .circle:nth-child(4) { width: 350px; height: 350px; top: 20%; right: 10%; animation-delay: -15s; background: radial-gradient(circle, rgba(46,213,115,0.1), transparent); }
+
+        @keyframes floatCircle {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -50px) scale(1.1); }
+            50% { transform: translate(-30px, 30px) scale(0.9); }
+            75% { transform: translate(20px, 60px) scale(1.05); }
+        }
+
+        .auth-card {
+            background: rgba(22, 33, 62, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 48px;
+            width: 440px;
+            max-width: 95vw;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(83,82,237,0.4);
+        }
+
+        .auth-logo h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-logo p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .auth-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(83,82,237,0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            margin-top: 8px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(83,82,237,0.4);
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .google-btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-hover);
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-error {
+            background: rgba(255,71,87,0.15);
+            border: 1px solid rgba(255,71,87,0.3);
+            color: var(--red);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .auth-success {
+            background: rgba(46,213,115,0.15);
+            border: 1px solid rgba(46,213,115,0.3);
+            color: var(--green);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* ===== MAIN APP ===== */
+        .app-container {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Server List */
+        .server-list {
+            width: 72px;
+            min-width: 72px;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            gap: 8px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+
+        .server-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+        }
+
+        .server-icon:hover, .server-icon.active {
+            border-radius: 16px;
+            background: var(--accent);
+            color: white;
+        }
+
+        .server-icon.active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            width: 4px;
+            height: 36px;
+            background: white;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .server-icon:hover::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            width: 4px;
+            height: 20px;
+            background: white;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .server-icon.home-icon {
+            background: var(--accent);
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .server-separator {
+            width: 32px;
+            height: 2px;
+            background: var(--border);
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        .server-icon.add-server {
+            background: transparent;
+            border: 2px dashed var(--border);
+            color: var(--green);
+            font-size: 24px;
+        }
+
+        .server-icon.add-server:hover {
+            background: var(--green);
+            color: white;
+            border: none;
+        }
+
+        .server-tooltip {
+            position: absolute;
+            left: 60px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .server-icon:hover .server-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Channel Sidebar */
+        .channel-sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .server-header {
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .server-header:hover {
+            background: var(--bg-hover);
+        }
+
+        .channel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .channel-category {
+            padding: 16px 16px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .channel-category .add-channel {
+            opacity: 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .channel-category:hover .add-channel {
+            opacity: 1;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            margin: 1px 8px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .channel-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .channel-item.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .channel-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .channel-item .channel-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .channel-item:hover .channel-actions {
+            opacity: 1;
+        }
+
+        .channel-actions i {
+            font-size: 12px;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .channel-actions i:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Voice Connected */
+        .voice-status {
+            padding: 12px;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .voice-status.connected {
+            display: block;
+        }
+
+        .voice-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .voice-info span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .voice-controls button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .voice-controls button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .voice-controls button.active {
+            background: rgba(255,71,87,0.2);
+            color: var(--red);
+        }
+
+        /* User Panel */
+        .user-panel {
+            padding: 10px;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-avatar .status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-dark);
+        }
+
+        .status-online { background: var(--green); }
+        .status-idle { background: var(--yellow); }
+        .status-dnd { background: var(--red); }
+        .status-offline { background: var(--text-muted); }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-info .username {
+            font-size: 13px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-info .user-tag {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .user-panel-actions {
+            display: flex;
+            gap: 2px;
+        }
+
+        .user-panel-actions button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .user-panel-actions button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--bg-chat);
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 48px;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-header-left i {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .chat-header-left .channel-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .chat-header-left .channel-topic {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: 8px;
+            padding-left: 8px;
+            border-left: 1px solid var(--border);
+        }
+
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chat-header-right button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 16px;
+        }
+
+        .chat-header-right button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .chat-header-search {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: var(--radius-xs);
+            padding: 4px 8px;
+            gap: 6px;
+        }
+
+        .chat-header-search input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 13px;
+            width: 140px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-header-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Messages */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-message .welcome-icon {
+            width: 68px;
+            height: 68px;
+            background: var(--bg-input);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            color: var(--text-muted);
+        }
+
+        .welcome-message h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .welcome-message p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 450px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .message-group {
+            display: flex;
+            gap: 12px;
+            padding: 4px 0;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .message-group:hover {
+            background: var(--bg-hover);
+        }
+
+        .message-group:hover .message-actions {
+            opacity: 1;
+        }
+
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .msg-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .msg-username {
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .msg-username:hover {
+            text-decoration: underline;
+        }
+
+        .msg-badge {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-admin {
+            background: var(--red);
+            color: white;
+        }
+
+        .badge-mod {
+            background: var(--yellow);
+            color: #1a1a2e;
+        }
+
+        .badge-bot {
+            background: var(--accent);
+            color: white;
+        }
+
+        .msg-timestamp {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .msg-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            word-wrap: break-word;
+        }
+
+        .msg-text img.emoji {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+
+        .msg-image {
+            max-width: 400px;
+            max-height: 300px;
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .msg-file {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-top: 8px;
+            max-width: 400px;
+        }
+
+        .msg-file i {
+            font-size: 28px;
+            color: var(--text-muted);
+        }
+
+        .msg-file-info .file-name {
+            font-size: 14px;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .msg-file-info .file-size {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .message-actions {
+            position: absolute;
+            top: -16px;
+            right: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            display: flex;
+            gap: 2px;
+            padding: 2px;
+            opacity: 0;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .message-actions button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: var(--radius-xs);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .message-actions button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .system-message {
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .system-message i {
+            margin-right: 4px;
+        }
+
+        /* Message Input */
+        .message-input-area {
+            padding: 0 16px 16px;
+        }
+
+        .message-input-wrapper {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: flex-end;
+            padding: 4px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .message-input-wrapper:focus-within {
+            border-color: var(--accent);
+        }
+
+        .input-actions-left {
+            display: flex;
+            padding: 6px;
+        }
+
+        .input-actions-left button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .input-actions-left button:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .message-textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            padding: 10px 8px;
+            resize: none;
+            outline: none;
+            max-height: 200px;
+            min-height: 20px;
+            line-height: 1.4;
+        }
+
+        .message-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-actions-right {
+            display: flex;
+            padding: 6px;
+            gap: 2px;
+        }
+
+        .input-actions-right button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .input-actions-right button:hover {
+            color: var(--text-primary);
+        }
+
+        .typing-indicator {
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            height: 20px;
+        }
+
+        /* Members Sidebar */
+        .members-sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 16px 8px;
+            display: none;
+        }
+
+        .members-sidebar.visible {
+            display: block;
+        }
+
+        .member-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 16px 8px 4px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .member-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .member-item .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: white;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .member-item .member-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .member-item .member-name .role-color {
+            color: inherit;
+        }
+
+        .member-item.offline {
+            opacity: 0.4;
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            width: 480px;
+            max-width: 95vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { transform: scale(0.95) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            text-decoration: underline;
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e8414f;
+        }
+
+        /* Settings Panel */
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: none;
+        }
+
+        .settings-overlay.show {
+            display: flex;
+        }
+
+        .settings-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .settings-nav {
+            width: 240px;
+            min-width: 240px;
+            background: var(--bg-dark);
+            padding: 40px 12px;
+            overflow-y: auto;
+        }
+
+        .settings-nav-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            margin-top: 8px;
+        }
+
+        .settings-nav-item {
+            padding: 8px 12px;
+            border-radius: var(--radius-xs);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 1px 0;
+        }
+
+        .settings-nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .settings-nav-item.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .settings-nav-item.danger {
+            color: var(--red);
+        }
+
+        .settings-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .settings-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .settings-close:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .settings-section {
+            max-width: 660px;
+        }
+
+        .settings-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-top: 24px;
+        }
+
+        .settings-card {
+            background: var(--bg-dark);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-row-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .settings-row-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: var(--text-muted);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--green);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        /* Profile card in settings */
+        .profile-card {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 32px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-user-list {
+            margin-top: 16px;
+        }
+
+        .admin-user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+        }
+
+        .admin-user-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-user-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Emoji Picker */
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 16px;
+            width: 340px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 100;
+        }
+
+        .emoji-picker.show {
+            display: block;
+        }
+
+        .emoji-picker-header {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .emoji-picker-header input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius-xs);
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            padding: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .emoji-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            font-size: 22px;
+            transition: var(--transition);
+        }
+
+        .emoji-item:hover {
+            background: var(--bg-hover);
+            transform: scale(1.2);
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            min-width: 180px;
+            box-shadow: var(--shadow);
+            z-index: 3000;
+            display: none;
+        }
+
+        .context-menu.show {
+            display: block;
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--radius-xs);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .context-menu-item:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .context-menu-item.danger {
+            color: var(--red);
+        }
+
+        .context-menu-item.danger:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        .context-menu-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        /* Home / DM View */
+        .home-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .home-view.show {
+            display: flex;
+        }
+
+        .home-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .home-content .home-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .home-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .home-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Discover View */
+        .discover-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .discover-view.show {
+            display: flex;
+        }
+
+        .discover-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .discover-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .discover-search {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            gap: 10px;
+            max-width: 500px;
+        }
+
+        .discover-search input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .discover-grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            align-content: start;
+        }
+
+        .discover-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .discover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .discover-card-banner {
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+        }
+
+        .discover-card-body {
+            padding: 16px;
+        }
+
+        .discover-card-body h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .discover-card-body p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .discover-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .discover-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* DM List */
+        .dm-list {
+            padding: 8px;
+        }
+
+        .dm-header-text {
+            padding: 12px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dm-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dm-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .dm-item.active {
+            background: var(--bg-active);
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            width: 18px;
+            height: 18px;
+            background: var(--red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+        }
+
+        /* File upload preview */
+        .file-upload-preview {
+            display: none;
+            padding: 8px 16px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            margin: 0 16px;
+        }
+
+        .file-upload-preview.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-preview-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border-radius: var(--radius-xs);
+        }
+
+        .file-preview-remove {
+            cursor: pointer;
+            color: var(--red);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .channel-sidebar { display: none; }
+            .members-sidebar { display: none !important; }
+            .server-list { width: 60px; min-width: 60px; }
+            .server-icon { width: 40px; height: 40px; font-size: 14px; }
+            .auth-card { padding: 28px; }
+            .settings-nav { width: 200px; min-width: 200px; }
+        }
+
+        /* Loading Splash */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent), #7c6bf0);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            margin-bottom: 24px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .splash-bar {
+            width: 200px;
+            height: 4px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .splash-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #7c6bf0);
+            border-radius: 2px;
+            animation: loading 1.5s ease forwards;
+        }
+
+        @keyframes loading {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .splash-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        /* Nitro Badge */
+        .nitro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #ff6b9d, #c44dff);
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Role colors */
+        .role-admin { color: #ff4757 !important; }
+        .role-moderator { color: #ffa502 !important; }
+        .role-member { color: #2ed573 !important; }
+        .role-vip { color: #ff6b9d !important; }
+
+        /* Select Dropdown */
+        .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .form-select option {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div class="splash-screen" id="splashScreen">
+    <div class="splash-logo"><i class="fas fa-comments"></i></div>
+    <h2 style="font-size: 24px; font-weight: 800;">Lorensa Chat</h2>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    <p class="splash-text">Yükleniyor...</p>
+</div>
+
+<!-- Auth Container -->
+<div class="auth-container" id="authContainer" style="display:none;">
+    <div class="auth-bg-animation">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="logo-icon"><i class="fas fa-comments"></i></div>
+            <h1>Lorensa Chat</h1>
+            <p>Yapımcı: Zahit Eryavuz</p>
+        </div>
+
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('login')">Giriş Yap</div>
+            <div class="auth-tab" onclick="switchAuthTab('register')">Kayıt Ol</div>
+        </div>
+
+        <div id="authError" class="auth-error"></div>
+        <div id="authSuccess" class="auth-success"></div>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label>E-posta veya Kullanıcı Adı</label>
+                <input type="text" class="form-input" id="loginEmail" placeholder="E-posta veya kullanıcı adınız">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="Şifrenizi girin">
+            </div>
+            <button class="auth-btn" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </button>
+            <div class="auth-divider">veya</div>
+            <button class="google-btn" onclick="handleGoogleLogin()">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google ile devam et
+            </button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerForm" style="display:none;">
+            <div class="form-group">
+                <label>E-posta</label>
+                <input type="email" class="form-input" id="regEmail" placeholder="E-posta adresiniz">
+            </div>
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" class="form-input" id="regUsername" placeholder="Kullanıcı adınız">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" class="form-input" id="regPassword" placeholder="Güçlü bir şifre oluşturun">
+            </div>
+            <div class="form-group">
+                <label>Doğum Tarihi</label>
+                <input type="date" class="form-input" id="regBirthdate">
+            </div>
+            <button class="auth-btn" onclick="handleRegister()">
+                <i class="fas fa-user-plus"></i> Kayıt Ol
+            </button>
+            <div class="auth-divider">veya</div>
+            <button class="google-btn" onclick="handleGoogleLogin()">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google ile kayıt ol
+            </button>
+        </div>
+
+        <div class="auth-footer" id="authFooter">
+            Hesabın yok mu? <a onclick="switchAuthTab('register')">Kayıt Ol</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Application -->
+<div class="app-container" id="appContainer">
+    <div class="app-layout">
+        <!-- Server List -->
+        <div class="server-list" id="serverList">
+            <div class="server-icon home-icon active" onclick="goHome()" title="Ana Sayfa">
+                <i class="fas fa-comments"></i>
+                <span class="server-tooltip">Ana Sayfa</span>
+            </div>
+            <div class="server-separator"></div>
+            <div id="serverIcons"></div>
+            <div class="server-icon add-server" onclick="openModal('createServerModal')">
+                <i class="fas fa-plus"></i>
+                <span class="server-tooltip">Sunucu Oluştur</span>
+            </div>
+            <div class="server-icon" onclick="openDiscover()" style="background:var(--green);color:white;">
+                <i class="fas fa-compass"></i>
+                <span class="server-tooltip">Keşfet</span>
+            </div>
+        </div>
+
+        <!-- Channel Sidebar -->
+        <div class="channel-sidebar" id="channelSidebar">
+            <div class="server-header" id="serverHeader">
+                <span id="serverHeaderName">Lorensa Chat</span>
+                <i class="fas fa-chevron-down" style="font-size:12px;color:var(--text-muted);"></i>
+            </div>
+
+            <!-- Home/DM channels -->
+            <div id="homeChannels" class="channel-list">
+                <div class="dm-list">
+                    <div class="channel-item" onclick="openDiscover()" style="margin:4px 8px;">
+                        <i class="fas fa-compass"></i> Keşfet
+                    </div>
+                    <div class="dm-header-text">
+                        DİREKT MESAJLAR
+                        <i class="fas fa-plus" style="cursor:pointer;font-size:14px;" onclick="openModal('dmModal')"></i>
+                    </div>
+                    <div id="dmList"></div>
+                </div>
+            </div>
+
+            <!-- Server channels -->
+            <div id="serverChannels" class="channel-list" style="display:none;"></div>
+
+            <!-- Voice Status -->
+            <div class="voice-status" id="voiceStatus">
+                <div class="voice-info">
+                    <span><i class="fas fa-signal"></i> Ses Bağlandı</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;" id="voiceChannelName">Genel Ses</div>
+                <div class="voice-controls">
+                    <button id="btnMic" onclick="toggleMic()" title="Mikrofon"><i class="fas fa-microphone"></i></button>
+                    <button id="btnDeafen" onclick="toggleDeafen()" title="Kulaklık"><i class="fas fa-headphones"></i></button>
+                    <button onclick="disconnectVoice()" title="Bağlantıyı Kes" style="background:rgba(255,71,87,0.2);color:var(--red);"><i class="fas fa-phone-slash"></i></button>
+                </div>
+            </div>
+
+            <!-- User Panel -->
+            <div class="user-panel">
+                <div class="user-avatar" id="userAvatarPanel">
+                    <span id="userAvatarLetter">U</span>
+                    <div class="status-dot status-online"></div>
+                </div>
+                <div class="user-info">
+                    <div class="username" id="userDisplayName">Kullanıcı</div>
+                    <div class="user-tag" id="userTag">#0000</div>
+                </div>
+                <div class="user-panel-actions">
+                    <button onclick="toggleMic()" title="Mikrofon" id="panelMic"><i class="fas fa-microphone"></i></button>
+                    <button onclick="toggleDeafen()" title="Kulaklık" id="panelDeafen"><i class="fas fa-headphones"></i></button>
+                    <button onclick="openSettings()" title="Ayarlar"><i class="fas fa-cog"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Home View -->
+            <div class="home-view show" id="homeView">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <i class="fas fa-users"></i>
+                        <span class="channel-name">Arkadaşlar</span>
+                    </div>
+                </div>
+                <div class="home-content">
+                    <div class="home-icon"><i class="fas fa-user-friends"></i></div>
+                    <h2>Lorensa Chat'e Hoş Geldiniz!</h2>
+                    <p>Arkadaşlarınızla sohbet etmeye başlayın veya bir sunucuya katılın. Sol taraftaki sunucu listesinden başlayabilirsiniz.</p>
+                    <p style="margin-top:12px;font-size:12px;color:var(--text-muted);">Yapımcı: Zahit Eryavuz</p>
+                </div>
+            </div>
+
+            <!-- Discover View -->
+            <div class="discover-view" id="discoverView">
+                <div class="discover-header">
+                    <h2><i class="fas fa-compass"></i> Keşfet</h2>
+                    <p style="color:var(--text-muted);margin-bottom:16px;">Toplulukları keşfedin ve katılın</p>
+                    <div class="discover-search">
+                        <i class="fas fa-search" style="color:var(--text-muted);"></i>
+                        <input type="text" placeholder="Topluluk ara..." id="discoverSearch" oninput="filterDiscover()">
+                    </div>
+                </div>
+                <div class="discover-grid" id="discoverGrid"></div>
+            </div>
+
+            <!-- Chat View -->
+            <div id="chatView" style="display:none;flex-direction:column;height:100%;">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <i class="fas fa-hashtag" id="chatChannelIcon"></i>
+                        <span class="channel-name" id="chatChannelName">genel</span>
+                        <span class="channel-topic" id="chatChannelTopic">Genel sohbet kanalı</span>
+                    </div>
+                    <div class="chat-header-right">
+                        <button onclick="togglePinned()" title="Sabitlenmiş Mesajlar"><i class="fas fa-thumbtack"></i></button>
+                        <button onclick="toggleMembers()" title="Üye Listesi"><i class="fas fa-users"></i></button>
+                        <div class="chat-header-search">
+                            <i class="fas fa-search" style="font-size:13px;color:var(--text-muted);"></i>
+                            <input type="text" placeholder="Ara" id="messageSearch" oninput="searchMessages()">
+                        </div>
+                        <button onclick="openModal('channelSettingsModal')" title="Kanal Ayarları"><i class="fas fa-cog"></i></button>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <div class="welcome-message" id="channelWelcome">
+                        <div class="welcome-icon"><i class="fas fa-hashtag"></i></div>
+                        <h2>#genel kanalına hoş geldiniz!</h2>
+                        <p>Bu kanalın başlangıcı burası. Sohbete başlayın!</p>
+                    </div>
+                    <div id="messagesList"></div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator"></div>
+
+                <div class="file-upload-preview" id="filePreview">
+                    <div class="file-preview-item" id="filePreviewContent"></div>
+                    <span class="file-preview-remove" onclick="clearFileUpload()"><i class="fas fa-times"></i></span>
+                </div>
+
+                <div class="message-input-area" style="position:relative;">
+                    <div class="message-input-wrapper">
+                        <div class="input-actions-left">
+                            <button onclick="triggerFileUpload()" title="Dosya Yükle"><i class="fas fa-plus-circle"></i></button>
+                        </div>
+                        <textarea class="message-textarea" id="messageInput" placeholder="#genel kanalına mesaj gönder" rows="1" onkeydown="handleMessageKeydown(event)" oninput="autoResizeTextarea(this); showTyping()"></textarea>
+                        <div class="input-actions-right">
+                            <button onclick="toggleEmojiPicker()" title="Emoji"><i class="fas fa-smile"></i></button>
+                            <button onclick="sendMessage()" title="Gönder"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    <div class="emoji-picker" id="emojiPicker"></div>
+                    <input type="file" id="fileInput" style="display:none;" onchange="handleFileSelect(event)" multiple>
+                </div>
+            </div>
+        </div>
+
+        <!-- Members Sidebar -->
+        <div class="members-sidebar" id="membersSidebar">
+            <div id="membersContent"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Server Modal -->
+<div class="modal-overlay" id="createServerModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Sunucu Oluştur</h2>
+            <button class="modal-close" onclick="closeModal('createServerModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Sunucu Adı</label>
+                <input type="text" class="form-input" id="newServerName" placeholder="Sunucu adını girin">
+            </div>
+            <div class="form-group">
+                <label>Sunucu Açıklaması</label>
+                <input type="text" class="form-input" id="newServerDesc" placeholder="Kısa bir açıklama">
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select class="form-select" id="newServerCategory">
+                    <option value="gaming">Oyun</option>
+                    <option value="education">Eğitim</option>
+                    <option value="music">Müzik</option>
+                    <option value="tech">Teknoloji</option>
+                    <option value="art">Sanat</option>
+                    <option value="social">Sosyal</option>
+                    <option value="other">Diğer</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('createServerModal')">İptal</button>
+            <button class="btn btn-primary" onclick="createServer()">Oluştur</button>
+        </div>
+    </div>
+</div>
+
+<!-- Create Channel Modal -->
+<div class="modal-overlay" id="createChannelModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Kanal Oluştur</h2>
+            <button class="modal-close" onclick="closeModal('createChannelModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Kanal Türü</label>
+                <div style="display:flex;gap:8px;margin-bottom:16px;">
+                    <div id="channelTypeText" class="settings-card" style="flex:1;cursor:pointer;padding:16px;text-align:center;border:2px solid var(--accent);" onclick="selectChannelType('text')">
+                        <i class="fas fa-hashtag" style="font-size:24px;margin-bottom:8px;"></i>
+                        <div style="font-weight:600;">Metin</div>
+                    </div>
+                    <div id="channelTypeVoice" class="settings-card" style="flex:1;cursor:pointer;padding:16px;text-align:center;border:2px solid transparent;" onclick="selectChannelType('voice')">
+                        <i class="fas fa-volume-up" style="font-size:24px;margin-bottom:8px;"></i>
+                        <div style="font-weight:600;">Ses</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Kanal Adı</label>
+                <input type="text" class="form-input" id="newChannelName" placeholder="yeni-kanal">
+            </div>
+            <div class="form-group">
+                <label>Kanal Açıklaması</label>
+                <input type="text" class="form-input" id="newChannelTopic" placeholder="Kanal konusu">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('createChannelModal')">İptal</button>
+            <button class="btn btn-primary" onclick="createChannel()">Oluştur</button>
+        </div>
+    </div>
+</div>
+
+<!-- DM Modal -->
+<div class="modal-overlay" id="dmModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Yeni Direkt Mesaj</h2>
+            <button class="modal-close" onclick="closeModal('dmModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" class="form-input" id="dmUsername" placeholder="Kullanıcı adı girin">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('dmModal')">İptal</button>
+            <button class="btn btn-primary" onclick="startDM()">Mesaj Gönder</button>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Settings Modal -->
+<div class="modal-overlay" id="channelSettingsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Kanal Ayarları</h2>
+            <button class="modal-close" onclick="closeModal('channelSettingsModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Kanal Adı</label>
+                <input type="text" class="form-input" id="editChannelName">
+            </div>
+            <div class="form-group">
+                <label>Kanal Konusu</label>
+                <input type="text" class="form-input" id="editChannelTopic">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" onclick="deleteCurrentChannel()">Kanalı Sil</button>
+            <button class="btn btn-primary" onclick="saveChannelSettings()">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<!-- Context Menu -->
+<div class="context-menu" id="contextMenu"></div>
+
+<!-- Settings Overlay -->
+<div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-layout">
+        <div class="settings-nav">
+            <div class="settings-nav-category">Kullanıcı Ayarları</div>
+            <div class="settings-nav-item active" onclick="showSettingsTab('account')">Hesabım</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('profile')">Profil</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('appearance')">Görünüm</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('notifications')">Bildirimler</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('voice')">Ses & Görüntü</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('privacy')">Gizlilik</div>
+            <div class="settings-nav-category">Uygulama Ayarları</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('language')">Dil</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('keybinds')">Tuş Atama</div>
+            <div class="settings-nav-item" onclick="showSettingsTab('nitro')">Lorensa Nitro</div>
+            <div class="settings-nav-category" id="adminNavCategory" style="display:none;">Yönetim</div>
+            <div class="settings-nav-item" id="adminNavItem" style="display:none;" onclick="showSettingsTab('admin')">Admin Paneli</div>
+            <div class="settings-nav-category"></div>
+            <div class="settings-nav-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</div>
+        </div>
+        <div class="settings-content">
+            <button class="settings-close" onclick="closeSettings()"><i class="fas fa-times"></i></button>
+
+            <!-- Account -->
+            <div class="settings-section" id="settingsAccount">
+                <h2>Hesabım</h2>
+                <div class="settings-card">
+                    <div class="profile-card">
+                        <div class="profile-avatar-large" id="settingsAvatar">U</div>
+                        <div class="profile-info">
+                            <h3 id="settingsUsername">Kullanıcı</h3>
+                            <p id="settingsEmail">user@email.com</p>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Kullanıcı Adı</div><div class="settings-row-desc" id="settingsUsernameRow">Kullanıcı</div></div>
+                        <button class="btn btn-primary" onclick="editUsername()">Düzenle</button>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">E-posta</div><div class="settings-row-desc" id="settingsEmailRow">user@email.com</div></div>
+                        <button class="btn btn-primary" onclick="editEmail()">Düzenle</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="settings-section" id="settingsProfile" style="display:none;">
+                <h2>Profil</h2>
+                <div class="settings-card">
+                    <div class="form-group">
+                        <label>Hakkımda</label>
+                        <textarea class="form-input" id="profileAbout" rows="3" placeholder="Kendiniz hakkında bir şeyler yazın..." oninput="saveProfileAbout()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Durum</label>
+                        <select class="form-select" id="profileStatus" onchange="changeStatus()">
+                            <option value="online">🟢 Çevrimiçi</option>
+                            <option value="idle">🟡 Boşta</option>
+                            <option value="dnd">🔴 Rahatsız Etmeyin</option>
+                            <option value="offline">⚫ Görünmez</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appearance -->
+            <div class="settings-section" id="settingsAppearance" style="display:none;">
+                <h2>Görünüm</h2>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Tema</div><div class="settings-row-desc">Karanlık ve Aydınlık tema arasında geçiş yapın</div></div>
+                        <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Mesaj Boyutu</div><div class="settings-row-desc">Metin boyutunu ayarlayın</div></div>
+                        <select class="form-select" style="width:120px;" id="fontSizeSelect" onchange="changeFontSize()">
+                            <option value="12">Küçük</option>
+                            <option value="14" selected>Normal</option>
+                            <option value="16">Büyük</option>
+                            <option value="18">Çok Büyük</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Kompakt Mod</div><div class="settings-row-desc">Mesajları daha sıkışık göster</div></div>
+                        <div class="toggle-switch" id="compactToggle" onclick="toggleCompact()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="settings-section" id="settingsNotifications" style="display:none;">
+                <h2>Bildirimler</h2>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Masaüstü Bildirimleri</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Bildirim Sesi</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">DM Bildirimleri</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice -->
+            <div class="settings-section" id="settingsVoice" style="display:none;">
+                <h2>Ses & Görüntü</h2>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Giriş Cihazı</div></div>
+                        <select class="form-select" style="width:200px;"><option>Varsayılan</option></select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Çıkış Cihazı</div></div>
+                        <select class="form-select" style="width:200px;"><option>Varsayılan</option></select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Bas Konuş</div><div class="settings-row-desc">Konuşmak için tuşa basın</div></div>
+                        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Gürültü Bastırma</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Ekran Paylaşımı Kalitesi</div></div>
+                        <select class="form-select" style="width:200px;">
+                            <option>720p 30fps</option>
+                            <option>1080p 30fps</option>
+                            <option>1080p 60fps (Nitro)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="settings-section" id="settingsPrivacy" style="display:none;">
+                <h2>Gizlilik & Güvenlik</h2>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">DM Kabul Et</div><div class="settings-row-desc">Sunucu üyelerinden DM almayı kabul edin</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Aktivite Durumu</div><div class="settings-row-desc">Ne yaptığınızı gösterin</div></div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="settings-section" id="settingsLanguage" style="display:none;">
+                <h2>Dil</h2>
+                <div class="settings-card">
+                    <div class="form-group">
+                        <label>Uygulama Dili</label>
+                        <select class="form-select">
+                            <option selected>Türkçe</option>
+                            <option>English</option>
+                            <option>Deutsch</option>
+                            <option>Français</option>
+                            <option>Español</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keybinds -->
+            <div class="settings-section" id="settingsKeybinds" style="display:none;">
+                <h2>Tuş Atamaları</h2>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <div class="settings-row-label">Bas Konuş</div>
+                        <div style="padding:6px 12px;background:var(--bg-primary);border-radius:var(--radius-xs);font-size:13px;">Atanmamış</div>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-label">Mikrofon Aç/Kapa</div>
+                        <div style="padding:6px 12px;background:var(--bg-primary);border-radius:var(--radius-xs);font-size:13px;">Ctrl + Shift + M</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nitro -->
+            <div class="settings-section" id="settingsNitro" style="display:none;">
+                <h2><i class="fas fa-rocket" style="color:#ff6b9d;"></i> Lorensa Nitro</h2>
+                <div class="settings-card" style="text-align:center;padding:40px;">
+                    <div style="font-size:48px;margin-bottom:16px;">🚀</div>
+                    <h3 style="font-size:24px;color:var(--text-primary);text-transform:none;letter-spacing:0;margin-bottom:8px;">Lorensa Nitro ile Deneyiminizi Yükseltin</h3>
+                    <p style="color:var(--text-muted);margin-bottom:24px;">HD video, büyük dosya yükleme, hareketli emojiler ve daha fazlası!</p>
+                    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+                        <div style="background:var(--bg-primary);padding:16px;border-radius:var(--radius-sm);text-align:left;flex:1;min-width:200px;">
+                            <div style="font-weight:700;margin-bottom:4px;">Nitro Temel</div>
+                            <div style="color:var(--accent);font-size:20px;font-weight:800;">₺29.99<span style="font-size:12px;color:var(--text-muted);">/ay</span></div>
+                            <ul style="list-style:none;margin-top:12px;font-size:13px;color:var(--text-secondary);">
+                                <li>✓ 50MB dosya yükleme</li>
+                                <li>✓ Hareketli avatar</li>
+                                <li>✓ Özel emoji kullanımı</li>
+                            </ul>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:16px;border-radius:var(--radius-sm);text-align:left;flex:1;min-width:200px;border:2px solid var(--accent);">
+                            <div style="font-weight:700;margin-bottom:4px;">Nitro <span class="nitro-badge">ÖNERİLEN</span></div>
+                            <div style="color:var(--accent);font-size:20px;font-weight:800;">₺59.99<span style="font-size:12px;color:var(--text-muted);">/ay</span></div>
+                            <ul style="list-style:none;margin-top:12px;font-size:13px;color:var(--text-secondary);">
+                                <li>✓ 500MB dosya yükleme</li>
+                                <li>✓ 4K 60fps ekran paylaşımı</li>
+                                <li>✓ 2 Sunucu Boost</li>
+                                <li>✓ Profil banner</li>
+                                <li>✓ Tüm Temel özellikler</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="settings-section" id="settingsAdmin" style="display:none;">
+                <h2><i class="fas fa-shield-alt" style="color:var(--red);"></i> Admin Paneli</h2>
+                <div class="settings-card">
+                    <h3>Platform İstatistikleri</h3>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;margin-bottom:20px;">
+                        <div style="background:var(--bg-primary);padding:16px;border-radius:var(--radius-sm);text-align:center;">
+                            <div style="font-size:28px;font-weight:800;color:var(--accent);" id="adminTotalUsers">0</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Toplam Kullanıcı</div>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:16px;border-radius:var(--radius-sm);text-align:center;">
+                            <div style="font-size:28px;font-weight:800;color:var(--green);" id="adminTotalServers">0</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Toplam Sunucu</div>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:16px;border-radius:var(--radius-sm);text-align:center;">
+                            <div style="font-size:28px;font-weight:800;color:var(--yellow);" id="adminTotalMessages">0</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Toplam Mesaj</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Kullanıcı Yönetimi</h3>
+                    <div id="adminUserList" class="admin-user-list"></div>
+                </div>
+                <div class="settings-card">
+                    <h3>Sunucu Yönetimi</h3>
+                    <div id="adminServerList" class="admin-user-list"></div>
+                </div>
+                <div class="settings-card">
+                    <h3>Platform Duyurusu Gönder</h3>
+                    <div class="form-group">
+                        <textarea class="form-input" id="adminAnnouncement" rows="3" placeholder="Tüm sunuculara duyuru gönderin..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendAnnouncement()">Duyuru Gönder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== DATA STORE =====
+const DB = {
+    get(key) { try { return JSON.parse(localStorage.getItem('lorensa_' + key)); } catch(e) { return null; } },
+    set(key, val) { localStorage.setItem('lorensa_' + key, JSON.stringify(val)); },
+    remove(key) { localStorage.removeItem('lorensa_' + key); }
+};
+
+// Initialize default data
+function initDB() {
+    if (!DB.get('users')) {
+        DB.set('users', [
+            {
+                id: 'admin_001',
+                username: 'Lorensa',
+                email: 'admin@lorensa.chat',
+                password: 'ZahitZeyn21',
+                role: 'admin',
+                tag: '#0001',
+                status: 'online',
+                about: 'Lorensa Chat Platform Yöneticisi | Yapımcı: Zahit Eryavuz',
+                createdAt: Date.now(),
+                color: '#ff4757',
+                banned: false,
+                nitro: true
+            }
+        ]);
+    }
+
+    if (!DB.get('servers')) {
+        DB.set('servers', [
+            {
+                id: 'server_lorensa',
+                name: 'Lorensa Topluluk',
+                description: 'Lorensa Chat resmi topluluk sunucusu',
+                icon: 'L',
+                color: '#5352ed',
+                owner: 'admin_001',
+                category: 'social',
+                members: ['admin_001'],
+                roles: [
+                    { id: 'role_admin', name: 'Admin', color: '#ff4757', permissions: ['all'] },
+                    { id: 'role_mod', name: 'Moderatör', color: '#ffa502', permissions: ['kick', 'ban', 'manage_messages'] },
+                    { id: 'role_member', name: 'Üye', color: '#2ed573', permissions: ['read', 'write'] }
+                ],
+                channels: [
+                    { id: 'ch_welcome', name: 'hoş-geldiniz', type: 'text', topic: 'Yeni üyelere hoş geldiniz!', category: 'Metin Kanalları' },
+                    { id: 'ch_general', name: 'genel', type: 'text', topic: 'Genel sohbet kanalı', category: 'Metin Kanalları' },
+                    { id: 'ch_memes', name: 'eğlence', type: 'text', topic: 'Eğlence ve memeler', category: 'Metin Kanalları' },
+                    { id: 'ch_dev', name: 'geliştirici', type: 'text', topic: 'Yazılım ve geliştirme', category: 'Metin Kanalları' },
+                    { id: 'ch_voice1', name: 'Genel Ses', type: 'voice', topic: '', category: 'Ses Kanalları' },
+                    { id: 'ch_voice2', name: 'Müzik', type: 'voice', topic: '', category: 'Ses Kanalları' },
+                    { id: 'ch_voice3', name: 'Oyun', type: 'voice', topic: '', category: 'Ses Kanalları' }
+                ],
+                public: true,
+                createdAt: Date.now()
+            },
+            {
+                id: 'server_gaming',
+                name: 'Oyun Merkezi',
+                description: 'Oyuncular için buluşma noktası',
+                icon: '🎮',
+                color: '#2ed573',
+                owner: 'admin_001',
+                category: 'gaming',
+                members: ['admin_001'],
+                roles: [
+                    { id: 'role_admin', name: 'Admin', color: '#ff4757', permissions: ['all'] },
+                    { id: 'role_member', name: 'Üye', color: '#2ed573', permissions: ['read', 'write'] }
+                ],
+                channels: [
+                    { id: 'ch_g_general', name: 'genel', type: 'text', topic: 'Oyun sohbeti', category: 'Metin Kanalları' },
+                    { id: 'ch_g_lfg', name: 'takım-bul', type: 'text', topic: 'Takım arkadaşı arıyorum', category: 'Metin Kanalları' },
+                    { id: 'ch_g_voice', name: 'Oyun Sesi', type: 'voice', topic: '', category: 'Ses Kanalları' }
+                ],
+                public: true,
+                createdAt: Date.now()
+            },
+            {
+                id: 'server_music',
+                name: 'Müzik Evi',
+                description: 'Müzik severler için',
+                icon: '🎵',
+                color: '#ff6b9d',
+                owner: 'admin_001',
+                category: 'music',
+                members: ['admin_001'],
+                roles: [
+                    { id: 'role_admin', name: 'Admin', color: '#ff4757', permissions: ['all'] },
+                    { id: 'role_member', name: 'Üye', color: '#2ed573', permissions: ['read', 'write'] }
+                ],
+                channels: [
+                    { id: 'ch_m_general', name: 'müzik-sohbet', type: 'text', topic: 'Müzik hakkında konuşun', category: 'Metin Kanalları' },
+                    { id: 'ch_m_share', name: 'müzik-paylaş', type: 'text', topic: 'Favori şarkılarınızı paylaşın', category: 'Metin Kanalları' },
+                    { id: 'ch_m_voice', name: 'Dinleme Odası', type: 'voice', topic: '', category: 'Ses Kanalları' }
+                ],
+                public: true,
+                createdAt: Date.now()
+            }
+        ]);
+    }
+
+    if (!DB.get('messages')) {
+        DB.set('messages', {
+            'ch_general': [
+                {
+                    id: 'msg_1',
+                    userId: 'admin_001',
+                    content: 'Lorensa Chat platformuna hoş geldiniz! 🎉 Burası herkesin bir araya gelip sohbet edebileceği harika bir yer.',
+                    timestamp: Date.now() - 3600000,
+                    reactions: [{ emoji: '🎉', users: ['admin_001'] }, { emoji: '❤️', users: [] }],
+                    pinned: false
+                },
+                {
+                    id: 'msg_2',
+                    userId: 'admin_001',
+                    content: 'Kurallar:\n1. Saygılı olun\n2. Spam yapmayın\n3. Eğlenin! 😊',
+                    timestamp: Date.now() - 3000000,
+                    reactions: [{ emoji: '👍', users: [] }],
+                    pinned: true
+                },
+                {
+                    id: 'msg_3',
+                    userId: 'system',
+                    content: '📢 Lorensa Chat v1.0 yayında! Yapımcı: Zahit Eryavuz',
+                    timestamp: Date.now() - 1800000,
+                    type: 'system'
+                }
+            ],
+            'ch_welcome': [
+                {
+                    id: 'msg_w1',
+                    userId: 'system',
+                    content: '🎉 Lorensa Topluluk sunucusuna hoş geldiniz!',
+                    timestamp: Date.now() - 7200000,
+                    type: 'system'
+                }
+            ]
+        });
+    }
+
+    if (!DB.get('dms')) {
+        DB.set('dms', {});
+    }
+}
+
+initDB();
+
+// ===== STATE =====
+let currentUser = null;
+let currentServer = null;
+let currentChannel = null;
+let currentView = 'home'; // home, server, discover, dm
+let newChannelType = 'text';
+let isMuted = false;
+let isDeafened = false;
+let voiceConnected = false;
+let membersVisible = true;
+let selectedFile = null;
+
+const avatarColors = ['#5352ed', '#2ed573', '#ff4757', '#ffa502', '#ff6348', '#1e90ff', '#ff6b9d', '#a55eea', '#26de81', '#fd9644'];
+
+function getAvatarColor(userId) {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    return avatarColors[Math.abs(hash) % avatarColors.length];
+}
+
+function generateTag() {
+    return '#' + String(Math.floor(Math.random() * 9999)).padStart(4, '0');
+}
+
+function generateId(prefix) {
+    return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function getTimeString(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 60000) return 'Az önce';
+    if (diff < 3600000) return Math.floor(diff/60000) + ' dk önce';
+    if (d.toDateString() === now.toDateString()) return 'Bugün ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ===== AUTH =====
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    if (tab === 'login') {
+        document.querySelectorAll('.auth-tab')[0].classList.add('active');
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('authFooter').innerHTML = 'Hesabın yok mu? <a onclick="switchAuthTab(\'register\')">Kayıt Ol</a>';
+    } else {
+        document.querySelectorAll('.auth-tab')[1].classList.add('active');
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('authFooter').innerHTML = 'Zaten hesabın var mı? <a onclick="switchAuthTab(\'login\')">Giriş Yap</a>';
+    }
+    hideAuthMessages();
+}
+
+function showAuthError(msg) {
+    const el = document.getElementById('authError');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('authSuccess').style.display = 'none';
+}
+
+function showAuthSuccess(msg) {
+    const el = document.getElementById('authSuccess');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('authError').style.display = 'none';
+}
+
+function hideAuthMessages() {
+    document.getElementById('authError').style.display = 'none';
+    document.getElementById('authSuccess').style.display = 'none';
+}
+
+function handleLogin() {
+    const emailOrUser = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!emailOrUser || !password) return showAuthError('Tüm alanları doldurun!');
+
+    const users = DB.get('users');
+    const user = users.find(u => (u.email === emailOrUser || u.username === emailOrUser) && u.password === password);
+
+    if (!user) return showAuthError('E-posta/kullanıcı adı veya şifre hatalı!');
+    if (user.banned) return showAuthError('Bu hesap yasaklanmıştır!');
+
+    user.status = 'online';
+    DB.set('users', users);
+    currentUser = user;
+    DB.set('currentUser', user.id);
+    enterApp();
+}
+
+function handleRegister() {
+    const email = document.getElementById('regEmail').value.trim();
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const birthdate = document.getElementById('regBirthdate').value;
+
+    if (!email || !username || !password) return showAuthError('Tüm alanları doldurun!');
+    if (password.length < 6) return showAuthError('Şifre en az 6 karakter olmalı!');
+    if (username.length < 2) return showAuthError('Kullanıcı adı en az 2 karakter olmalı!');
+
+    const users = DB.get('users');
+    if (users.find(u => u.email === email)) return showAuthError('Bu e-posta zaten kayıtlı!');
+    if (users.find(u => u.username === username)) return showAuthError('Bu kullanıcı adı zaten alınmış!');
+
+    const newUser = {
+        id: generateId('user'),
+        username,
+        email,
+        password,
+        role: 'member',
+        tag: generateTag(),
+        status: 'online',
+        about: '',
+        createdAt: Date.now(),
+        color: getAvatarColor(username),
+        banned: false,
+        nitro: false
+    };
+
+    users.push(newUser);
+    DB.set('users', users);
+
+    // Add to default server
+    const servers = DB.get('servers');
+    const lorensaServer = servers.find(s => s.id === 'server_lorensa');
+    if (lorensaServer && !lorensaServer.members.includes(newUser.id)) {
+        lorensaServer.members.push(newUser.id);
+        DB.set('servers', servers);
+    }
+
+    // System message
+    const messages = DB.get('messages');
+    if (!messages['ch_general']) messages['ch_general'] = [];
+    messages['ch_general'].push({
+        id: generateId('msg'),
+        userId: 'system',
+        content: `🎉 ${username} sunucuya katıldı! Hoş geldin!`,
+        timestamp: Date.now(),
+        type: 'system'
+    });
+    DB.set('messages', messages);
+
+    showAuthSuccess('Kayıt başarılı! Giriş yapabilirsiniz.');
+    switchAuthTab('login');
+    document.getElementById('loginEmail').value = email;
+}
+
+function handleGoogleLogin() {
+    const randomUser = 'GoogleUser' + Math.floor(Math.random() * 9999);
+    const email = randomUser.toLowerCase() + '@gmail.com';
+
+    const users = DB.get('users');
+    let user = users.find(u => u.email === email);
+
+    if (!user) {
+        user = {
+            id: generateId('user'),
+            username: randomUser,
+            email: email,
+            password: Math.random().toString(36).substr(2, 10),
+            role: 'member',
+            tag: generateTag(),
+            status: 'online',
+            about: 'Google ile giriş yaptım',
+            createdAt: Date.now(),
+            color: getAvatarColor(randomUser),
+            banned: false,
+            nitro: false
+        };
+        users.push(user);
+
+        const servers = DB.get('servers');
+        const lorensaServer = servers.find(s => s.id === 'server_lorensa');
+        if (lorensaServer) {
+            lorensaServer.members.push(user.id);
+            DB.set('servers', servers);
+        }
+    }
+
+    user.status = 'online';
+    DB.set('users', users);
+    currentUser = user;
+    DB.set('currentUser', user.id);
+    enterApp();
+}
+
+function handleLogout() {
+    if (currentUser) {
+        const users = DB.get('users');
+        const u = users.find(x => x.id === currentUser.id);
+        if (u) { u.status = 'offline'; DB.set('users', users); }
+    }
+    currentUser = null;
+    DB.remove('currentUser');
+    closeSettings();
+    document.getElementById('appContainer').style.display = 'none';
+    document.getElementById('authContainer').style.display = 'flex';
+}
+
+// ===== ENTER APP =====
+function enterApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    updateUserPanel();
+    renderServerList();
+    goHome();
+
+    if (currentUser.role === 'admin') {
+        document.getElementById('adminNavCategory').style.display = 'block';
+        document.getElementById('adminNavItem').style.display = 'block';
+    }
+}
+
+function updateUserPanel() {
+    if (!currentUser) return;
+    document.getElementById('userAvatarLetter').textContent = currentUser.username[0].toUpperCase();
+    document.getElementById('userDisplayName').textContent = currentUser.username;
+    document.getElementById('userTag').textContent = currentUser.tag;
+    document.getElementById('userAvatarPanel').style.background = `linear-gradient(135deg, ${currentUser.color || '#5352ed'}, ${currentUser.color || '#5352ed'}88)`;
+
+    const statusDot = document.querySelector('.user-panel .status-dot');
+    statusDot.className = 'status-dot status-' + currentUser.status;
+}
+
+// ===== SERVER LIST =====
+function renderServerList() {
+    const servers = DB.get('servers');
+    const container = document.getElementById('serverIcons');
+    container.innerHTML = '';
+
+    servers.forEach(server => {
+        if (!server.members.includes(currentUser.id)) return;
+
+        const div = document.createElement('div');
+        div.className = 'server-icon' + (currentServer && currentServer.id === server.id ? ' active' : '');
+        div.style.background = (currentServer && currentServer.id === server.id) ? server.color : 'var(--bg-secondary)';
+        div.style.color = (currentServer && currentServer.id === server.id) ? 'white' : 'var(--text-secondary)';
+        div.innerHTML = `${server.icon || server.name[0].toUpperCase()}<span class="server-tooltip">${server.name}</span>`;
+        div.onclick = () => selectServer(server.id);
+        div.oncontextmenu = (e) => showServerContextMenu(e, server.id);
+        container.appendChild(div);
+    });
+}
+
+function selectServer(serverId) {
+    const servers = DB.get('servers');
+    currentServer = servers.find(s => s.id === serverId);
+    if (!currentServer) return;
+
+    currentView = 'server';
+
+    // Update server icons
+    document.querySelectorAll('.server-list .server-icon').forEach(el => {
+        el.classList.remove('active');
+    });
+    renderServerList();
+
+    document.querySelector('.server-icon.home-icon').classList.remove('active');
+
+    // Update header
+    document.getElementById('serverHeaderName').textContent = currentServer.name;
+
+    // Show server channels
+    document.getElementById('homeChannels').style.display = 'none';
+    document.getElementById('serverChannels').style.display = 'block';
+    renderChannels();
+
+    // Select first text channel
+    const firstText = currentServer.channels.find(c => c.type === 'text');
+    if (firstText) selectChannel(firstText.id);
+}
+
+function renderChannels() {
+    if (!currentServer) return;
+    const container = document.getElementById('serverChannels');
+    container.innerHTML = '';
+
+    const categories = {};
+    currentServer.channels.forEach(ch => {
+        const cat = ch.category || 'Diğer';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(ch);
+    });
+
+    for (const [catName, channels] of Object.entries(categories)) {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'channel-category';
+        catDiv.innerHTML = `<span>${catName}</span><i class="fas fa-plus add-channel" onclick="event.stopPropagation();openCreateChannel()"></i>`;
+        container.appendChild(catDiv);
+
+        channels.forEach(ch => {
+            const div = document.createElement('div');
+            div.className = 'channel-item' + (currentChannel && currentChannel.id === ch.id ? ' active' : '');
+            const icon = ch.type === 'voice' ? 'fas fa-volume-up' : 'fas fa-hashtag';
+
+            if (ch.type === 'voice') {
+                div.innerHTML = `<i class="${icon}"></i><span>${ch.name}</span>
+                <div class="channel-actions">
+                    <i class="fas fa-cog" onclick="event.stopPropagation();"></i>
+                </div>`;
+                div.onclick = () => joinVoiceChannel(ch);
+            } else {
+                div.innerHTML = `<i class="${icon}"></i><span>${ch.name}</span>
+                <div class="channel-actions">
+                    <i class="fas fa-cog" onclick="event.stopPropagation();"></i>
+                </div>`;
+                div.onclick = () => selectChannel(ch.id);
+            }
+            container.appendChild(div);
+
+            // Show voice members
+            if (ch.type === 'voice' && voiceConnected && currentChannel && currentChannel.id === ch.id) {
+                const voiceUsers = document.createElement('div');
+                voiceUsers.style.cssText = 'padding:4px 16px 4px 44px;';
+                voiceUsers.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><div style="width:20px;height:20px;border-radius:50%;background:${currentUser.color};display:flex;align-items:center;justify-content:center;font-size:9px;color:white;font-weight:700;">${currentUser.username[0]}</div><span style="font-size:12px;color:var(--text-secondary);">${currentUser.username}</span></div>`;
+                container.appendChild(voiceUsers);
+            }
+        });
+    }
+}
+
+function selectChannel(channelId) {
+    if (!currentServer) return;
+    currentChannel = currentServer.channels.find(c => c.id === channelId);
+    if (!currentChannel) return;
+
+    currentView = 'server';
+    renderChannels();
+
+    // Show chat view
+    document.getElementById('homeView').classList.remove('show');
+    document.getElementById('discoverView').classList.remove('show');
+    document.getElementById('chatView').style.display = 'flex';
+
+    // Update header
+    document.getElementById('chatChannelIcon').className = 'fas fa-hashtag';
+    document.getElementById('chatChannelName').textContent = currentChannel.name;
+    document.getElementById('chatChannelTopic').textContent = currentChannel.topic || '';
+
+    // Update welcome
+    document.getElementById('channelWelcome').querySelector('h2').textContent = '#' + currentChannel.name + ' kanalına hoş geldiniz!';
+    document.getElementById('channelWelcome').querySelector('p').textContent = currentChannel.topic || 'Bu kanalın başlangıcı burası.';
+
+    // Update input placeholder
+    document.getElementById('messageInput').placeholder = '#' + currentChannel.name + ' kanalına mesaj gönder';
+
+    renderMessages();
+    renderMembers();
+    scrollToBottom();
+}
+
+// ===== VOICE =====
+function joinVoiceChannel(channel) {
+    currentChannel = channel;
+    voiceConnected = true;
+    document.getElementById('voiceStatus').classList.add('connected');
+    document.getElementById('voiceChannelName').textContent = channel.name + ' / ' + currentServer.name;
+    renderChannels();
+}
+
+function disconnectVoice() {
+    voiceConnected = false;
+    document.getElementById('voiceStatus').classList.remove('connected');
+    renderChannels();
+}
+
+function toggleMic() {
+    isMuted = !isMuted;
+    document.getElementById('btnMic').classList.toggle('active', isMuted);
+    document.getElementById('btnMic').innerHTML = isMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
+    document.getElementById('panelMic').innerHTML = isMuted ? '<i class="fas fa-microphone-slash" style="color:var(--red);"></i>' : '<i class="fas fa-microphone"></i>';
+}
+
+function toggleDeafen() {
+    isDeafened = !isDeafened;
+    document.getElementById('btnDeafen').classList.toggle('active', isDeafened);
+    document.getElementById('btnDeafen').innerHTML = isDeafened ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-headphones"></i>';
+    document.getElementById('panelDeafen').innerHTML = isDeafened ? '<i class="fas fa-volume-mute" style="color:var(--red);"></i>' : '<i class="fas fa-headphones"></i>';
+    if (isDeafened && !isMuted) toggleMic();
+}
+
+// ===== MESSAGES =====
+function renderMessages() {
+    if (!currentChannel) return;
+    const messages = DB.get('messages') || {};
+    const channelMsgs = messages[currentChannel.id] || [];
+    const container = document.getElementById('messagesList');
+    const users = DB.get('users');
+    container.innerHTML = '';
+
+    channelMsgs.forEach((msg, idx) => {
+        if (msg.type === 'system') {
+            const div = document.createElement('div');
+            div.className = 'system-message';
+            div.innerHTML = `<i class="fas fa-arrow-right"></i> ${msg.content}`;
+            container.appendChild(div);
+            return;
+        }
+
+        const user = users.find(u => u.id === msg.userId);
+        if (!user) return;
+
+        const prevMsg = idx > 0 ? channelMsgs[idx-1] : null;
+        const isGrouped = prevMsg && prevMsg.userId === msg.userId && prevMsg.type !== 'system' && (msg.timestamp - prevMsg.timestamp < 300000);
+
+        const div = document.createElement('div');
+        div.className = 'message-group';
+        div.id = 'msg-' + msg.id;
+
+        let badgeHtml = '';
+        if (user.role === 'admin') badgeHtml = '<span class="msg-badge badge-admin">ADMIN</span>';
+        else if (user.role === 'moderator') badgeHtml = '<span class="msg-badge badge-mod">MOD</span>';
+
+        let contentHtml = formatMessage(msg.content);
+
+        if (msg.file) {
+            if (msg.file.type && msg.file.type.startsWith('image/')) {
+                contentHtml += `<br><img src="${msg.file.data}" class="msg-image" onclick="window.open(this.src)">`;
+            } else {
+                contentHtml += `<div class="msg-file"><i class="fas fa-file"></i><div class="msg-file-info"><div class="file-name">${msg.file.name}</div><div class="file-size">${msg.file.size}</div></div></div>`;
+            }
+        }
+
+        // Reactions
+        let reactionsHtml = '';
+        if (msg.reactions && msg.reactions.length > 0) {
+            reactionsHtml = '<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">';
+            msg.reactions.forEach(r => {
+                const hasReacted = r.users.includes(currentUser.id);
+                reactionsHtml += `<div style="display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:13px;cursor:pointer;border:1px solid ${hasReacted ? 'var(--accent)' : 'var(--border)'};background:${hasReacted ? 'var(--bg-active)' : 'var(--bg-dark)'};" onclick="toggleReaction('${msg.id}','${r.emoji}')">${r.emoji} <span style="font-size:12px;color:var(--text-muted);">${r.users.length || ''}</span></div>`;
+            });
+            reactionsHtml += '</div>';
+        }
+
+        if (isGrouped) {
+            div.innerHTML = `
+                <div style="width:40px;flex-shrink:0;display:flex;justify-content:center;align-items:flex-start;">
+                    <span class="msg-timestamp" style="opacity:0;font-size:10px;">${new Date(msg.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'})}</span>
+                </div>
+                <div class="msg-content">
+                    <div class="msg-text">${contentHtml}</div>
+                    ${reactionsHtml}
+                </div>
+                <div class="message-actions">
+                    <button onclick="addReactionToMsg('${msg.id}','👍')" title="👍"><i class="fas fa-smile"></i></button>
+                    <button onclick="replyToMsg('${msg.id}')" title="Yanıtla"><i class="fas fa-reply"></i></button>
+                    ${msg.userId === currentUser.id || currentUser.role === 'admin' ? `<button onclick="deleteMessage('${msg.id}')" title="Sil"><i class="fas fa-trash"></i></button>` : ''}
+                    <button onclick="pinMessage('${msg.id}')" title="Sabitle"><i class="fas fa-thumbtack"></i></button>
+                </div>`;
+            div.querySelector('.msg-timestamp').closest('div').onmouseenter = function() { this.querySelector('.msg-timestamp').style.opacity = '1'; };
+            div.querySelector('.msg-timestamp').closest('div').onmouseleave = function() { this.querySelector('.msg-timestamp').style.opacity = '0'; };
+        } else {
+            const color = user.color || getAvatarColor(user.id);
+            div.innerHTML = `
+                <div class="msg-avatar" style="background:linear-gradient(135deg,${color},${color}88);">${user.username[0].toUpperCase()}</div>
+                <div class="msg-content">
+                    <div class="msg-header">
+                        <span class="msg-username role-${user.role}" style="color:${user.role === 'admin' ? '#ff4757' : (user.role === 'moderator' ? '#ffa502' : color)}">${user.username}</span>
+                        ${badgeHtml}
+                        ${user.nitro ? '<span class="nitro-badge"><i class="fas fa-rocket"></i> NITRO</span>' : ''}
+                        <span class="msg-timestamp">${getTimeString(msg.timestamp)}</span>
+                    </div>
+                    <div class="msg-text">${contentHtml}</div>
+                    ${reactionsHtml}
+                </div>
+                <div class="message-actions">
+                    <button onclick="addReactionToMsg('${msg.id}','👍')" title="👍"><i class="fas fa-smile"></i></button>
+                    <button onclick="replyToMsg('${msg.id}')" title="Yanıtla"><i class="fas fa-reply"></i></button>
+                    ${msg.userId === currentUser.id || currentUser.role === 'admin' ? `<button onclick="deleteMessage('${msg.id}')" title="Sil"><i class="fas fa-trash"></i></button>` : ''}
+                    <button onclick="pinMessage('${msg.id}')" title="Sabitle"><i class="fas fa-thumbtack"></i></button>
+                </div>`;
+        }
+
+        if (msg.pinned) {
+            div.style.borderLeft = '3px solid var(--yellow)';
+            div.style.paddingLeft = '8px';
+        }
+
+        container.appendChild(div);
+    });
+
+    scrollToBottom();
+}
+
+function formatMessage(text) {
+    if (!text) return '';
+    // Bold
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Italic
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Code
+    text = text.replace(/`(.*?)`/g, '<code style="background:var(--bg-dark);padding:2px 6px;border-radius:3px;font-size:13px;">$1</code>');
+    // Links
+    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:var(--accent);text-decoration:none;">$1</a>');
+    // Newlines
+    text = text.replace(/\n/g, '<br>');
+    // Emoji shortcuts
+    text = text.replace(/:heart:/g, '❤️').replace(/:smile:/g, '😊').replace(/:thumbsup:/g, '👍').replace(/:fire:/g, '🔥').replace(/:star:/g, '⭐');
+    return text;
+}
+
+function sendMessage() {
+    if (!currentChannel || currentChannel.type === 'voice') return;
+    const input = document.getElementById('messageInput');
+    const content = input.value.trim();
+    if (!content && !selectedFile) return;
+
+    const messages = DB.get('messages') || {};
+    if (!messages[currentChannel.id]) messages[currentChannel.id] = [];
+
+    const msg = {
+        id: generateId('msg'),
+        userId: currentUser.id,
+        content: content,
+        timestamp: Date.now(),
+        reactions: [],
+        pinned: false
+    };
+
+    if (selectedFile) {
+        msg.file = selectedFile;
+        clearFileUpload();
+    }
+
+    messages[currentChannel.id].push(msg);
+    DB.set('messages', messages);
+
+    input.value = '';
+    input.style.height = 'auto';
+    renderMessages();
+
+    // Bot response for commands
+    if (content.startsWith('/')) handleCommand(content, messages);
+}
+
+function handleCommand(content, messages) {
+    const cmd = content.split(' ')[0].toLowerCase();
+    let response = '';
+
+    switch(cmd) {
+        case '/help':
+            response = '📋 **Komutlar:**\n`/help` - Komut listesi\n`/ping` - Pong!\n`/roll` - Zar at\n`/flip` - Yazı tura\n`/date` - Tarih/Saat\n`/clear` - Mesajları temizle (admin)';
+            break;
+        case '/ping':
+            response = '🏓 Pong! Gecikme: ' + Math.floor(Math.random() * 50 + 10) + 'ms';
+            break;
+        case '/roll':
+            response = '🎲 Zar: **' + (Math.floor(Math.random() * 6) + 1) + '**';
+            break;
+        case '/flip':
+            response = '🪙 ' + (Math.random() > 0.5 ? '**Yazı!**' : '**Tura!**');
+            break;
+        case '/date':
+            response = '📅 ' + new Date().toLocaleString('tr-TR');
+            break;
+        case '/clear':
+            if (currentUser.role === 'admin') {
+                messages[currentChannel.id] = [];
+                DB.set('messages', messages);
+                renderMessages();
+                return;
+            } else {
+                response = '❌ Bu komutu kullanma yetkiniz yok!';
+            }
+            break;
+        default:
+            response = '❓ Bilinmeyen komut. `/help` yazarak komutları görebilirsiniz.';
+    }
+
+    if (response) {
+        messages[currentChannel.id].push({
+            id: generateId('msg'),
+            userId: 'admin_001',
+            content: response,
+            timestamp: Date.now() + 500,
+            reactions: [],
+            pinned: false
+        });
+        DB.set('messages', messages);
+        setTimeout(() => renderMessages(), 500);
+    }
+}
+
+function handleMessageKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+}
+
+function autoResizeTextarea(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
+function scrollToBottom() {
+    const container = document.getElementById('messagesContainer');
+    setTimeout(() => container.scrollTop = container.scrollHeight, 50);
+}
+
+function deleteMessage(msgId) {
+    const messages = DB.get('messages');
+    if (messages[currentChannel.id]) {
+        messages[currentChannel.id] = messages[currentChannel.id].filter(m => m.id !== msgId);
+        DB.set('messages', messages);
+        renderMessages();
+    }
+}
+
+function pinMessage(msgId) {
+    const messages = DB.get('messages');
+    if (messages[currentChannel.id]) {
+        const msg = messages[currentChannel.id].find(m => m.id === msgId);
+        if (msg) {
+            msg.pinned = !msg.pinned;
+            DB.set('messages', messages);
+            renderMessages();
+        }
+    }
+}
+
+function toggleReaction(msgId, emoji) {
+    const messages = DB.get('messages');
+    if (messages[currentChannel.id]) {
+        const msg = messages[currentChannel.id].find(m => m.id === msgId);
+        if (msg) {
+            if (!msg.reactions) msg.reactions = [];
+            let reaction = msg.reactions.find(r => r.emoji === emoji);
+            if (!reaction) {
+                reaction = { emoji, users: [] };
+                msg.reactions.push(reaction);
+            }
+            const idx = reaction.users.indexOf(currentUser.id);
+            if (idx > -1) reaction.users.splice(idx, 1);
+            else reaction.users.push(currentUser.id);
+            DB.set('messages', messages);
+            renderMessages();
+        }
+    }
+}
+
+function addReactionToMsg(msgId, emoji) {
+    toggleReaction(msgId, emoji);
+}
+
+function replyToMsg(msgId) {
+    const messages = DB.get('messages');
+    const msg = messages[currentChannel.id]?.find(m => m.id === msgId);
+    if (msg) {
+        const users = DB.get('users');
+        const user = users.find(u => u.id === msg.userId);
+        const input = document.getElementById('messageInput');
+        input.value = `> ${user ? user.username : 'Bilinmeyen'}: ${msg.content.substring(0, 50)}...\n`;
+        input.focus();
+    }
+}
+
+function showTyping() {
+    document.getElementById('typingIndicator').innerHTML = '';
+    // Simulated typing indicator
+}
+
+function searchMessages() {
+    const query = document.getElementById('messageSearch').value.toLowerCase();
+    const msgElements = document.querySelectorAll('.message-group');
+    msgElements.forEach(el => {
+        const text = el.textContent.toLowerCase();
+        el.style.display = text.includes(query) || !query ? '' : 'none';
+    });
+}
+
+// ===== FILES =====
+function triggerFileUpload() {
+    document.getElementById('fileInput').click();
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 8 * 1024 * 1024) {
+        alert('Dosya boyutu 8MB\'ı geçemez! Lorensa Nitro ile 500MB\'a kadar yükleyebilirsiniz.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        selectedFile = {
+            name: file.name,
+            type: file.type,
+            size: (file.size / 1024).toFixed(1) + ' KB',
+            data: e.target.result
+        };
+
+        document.getElementById('filePreview').classList.add('show');
+        document.getElementById('filePreviewContent').innerHTML = `<i class="fas fa-file" style="color:var(--accent);"></i> ${file.name} (${selectedFile.size})`;
+    };
+
+    if (file.type.startsWith('image/')) {
+        reader.readAsDataURL(file);
+    } else {
+        selectedFile = {
+            name: file.name,
+            type: file.type,
+            size: (file.size / 1024).toFixed(1) + ' KB',
+            data: null
+        };
+        document.getElementById('filePreview').classList.add('show');
+        document.getElementById('filePreviewContent').innerHTML = `<i class="fas fa-file" style="color:var(--accent);"></i> ${file.name} (${selectedFile.size})`;
+    }
+
+    event.target.value = '';
+}
+
+function clearFileUpload() {
+    selectedFile = null;
+    document.getElementById('filePreview').classList.remove('show');
+}
+
+// ===== EMOJI PICKER =====
+function toggleEmojiPicker() {
+    const picker = document.getElementById('emojiPicker');
+    picker.classList.toggle('show');
+    if (picker.classList.contains('show') && picker.innerHTML === '') {
+        renderEmojiPicker();
+    }
+}
+
+function renderEmojiPicker() {
+    const emojis = ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','😗','😙','😚','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','🥵','🥶','😳','🤪','😵','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾','💋','👋','🤚','🖐️','✋','🖖','👌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🦷','🦴','👀','👁️','👅','👄','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','⭐','🌟','✨','⚡','🔥','💥','🎉','🎊','🎵','🎶','🎮','🎲','🏆','🥇','🎯','🚀','💎','🌈','☀️','🌙'];
+
+        let html = `<div class="emoji-picker-header"><input type="text" placeholder="Emoji ara..." oninput="filterEmojis(this.value)"></div><div class="emoji-grid" id="emojiGrid">`;
+    emojis.forEach(e => {
+        html += `<div class="emoji-item" onclick="insertEmoji('${e}')">${e}</div>`;
+    });
+    html += '</div>';
+    document.getElementById('emojiPicker').innerHTML = html;
+}
+
+function filterEmojis(query) {
+    // Simple filter - just show/hide based on position (since we can't search emoji names easily in plain JS)
+    // All emojis will remain visible
+}
+
+function insertEmoji(emoji) {
+    const input = document.getElementById('messageInput');
+    input.value += emoji;
+    input.focus();
+    toggleEmojiPicker();
+}
+
+// ===== MEMBERS =====
+function toggleMembers() {
+    membersVisible = !membersVisible;
+    document.getElementById('membersSidebar').classList.toggle('visible', membersVisible);
+}
+
+function renderMembers() {
+    if (!currentServer) return;
+    const container = document.getElementById('membersContent');
+    const users = DB.get('users');
+    container.innerHTML = '';
+
+    const online = [];
+    const offline = [];
+
+    currentServer.members.forEach(memberId => {
+        const user = users.find(u => u.id === memberId);
+        if (user) {
+            if (user.status === 'offline') offline.push(user);
+            else online.push(user);
+        }
+    });
+
+    if (online.length > 0) {
+        container.innerHTML += `<div class="member-category">ÇEVRİMİÇİ — ${online.length}</div>`;
+        online.forEach(u => {
+            container.innerHTML += createMemberItem(u, false);
+        });
+    }
+
+    if (offline.length > 0) {
+        container.innerHTML += `<div class="member-category">ÇEVRİMDIŞI — ${offline.length}</div>`;
+        offline.forEach(u => {
+            container.innerHTML += createMemberItem(u, true);
+        });
+    }
+}
+
+function createMemberItem(user, isOffline) {
+    const color = user.color || getAvatarColor(user.id);
+    const roleClass = user.role === 'admin' ? 'role-admin' : (user.role === 'moderator' ? 'role-moderator' : '');
+    return `
+    <div class="member-item ${isOffline ? 'offline' : ''}" oncontextmenu="showMemberContextMenu(event, '${user.id}')">
+        <div class="member-avatar" style="background:linear-gradient(135deg,${color},${color}88);">
+            ${user.username[0].toUpperCase()}
+            <div class="status-dot status-${user.status}" style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border:2px solid var(--bg-primary);"></div>
+        </div>
+        <div class="member-name ${roleClass}">${user.username}
+            ${user.role === 'admin' ? ' <span class="msg-badge badge-admin" style="font-size:8px;">ADMIN</span>' : ''}
+            ${user.nitro ? ' <span style="color:#ff6b9d;font-size:10px;"><i class="fas fa-rocket"></i></span>' : ''}
+        </div>
+    </div>`;
+}
+
+// ===== SERVERS CRUD =====
+function createServer() {
+    const name = document.getElementById('newServerName').value.trim();
+    const desc = document.getElementById('newServerDesc').value.trim();
+    const category = document.getElementById('newServerCategory').value;
+
+    if (!name) return alert('Sunucu adı gerekli!');
+
+    const servers = DB.get('servers');
+    const server = {
+        id: generateId('server'),
+        name,
+        description: desc,
+        icon: name[0].toUpperCase(),
+        color: avatarColors[Math.floor(Math.random() * avatarColors.length)],
+        owner: currentUser.id,
+        category,
+        members: [currentUser.id],
+        roles: [
+            { id: 'role_admin', name: 'Admin', color: '#ff4757', permissions: ['all'] },
+            { id: 'role_member', name: 'Üye', color: '#2ed573', permissions: ['read', 'write'] }
+        ],
+        channels: [
+            { id: generateId('ch'), name: 'genel', type: 'text', topic: 'Genel sohbet', category: 'Metin Kanalları' },
+            { id: generateId('ch'), name: 'Genel Ses', type: 'voice', topic: '', category: 'Ses Kanalları' }
+        ],
+        public: true,
+        createdAt: Date.now()
+    };
+
+    servers.push(server);
+    DB.set('servers', servers);
+
+    // Init messages for channels
+    const messages = DB.get('messages') || {};
+    server.channels.forEach(ch => {
+        if (ch.type === 'text') {
+            messages[ch.id] = [{
+                id: generateId('msg'),
+                userId: 'system',
+                content: `🎉 ${name} sunucusu oluşturuldu!`,
+                timestamp: Date.now(),
+                type: 'system'
+            }];
+        }
+    });
+    DB.set('messages', messages);
+
+    closeModal('createServerModal');
+    document.getElementById('newServerName').value = '';
+    document.getElementById('newServerDesc').value = '';
+    renderServerList();
+    selectServer(server.id);
+}
+
+function openCreateChannel() {
+    openModal('createChannelModal');
+}
+
+function selectChannelType(type) {
+    newChannelType = type;
+    document.getElementById('channelTypeText').style.borderColor = type === 'text' ? 'var(--accent)' : 'transparent';
+    document.getElementById('channelTypeVoice').style.borderColor = type === 'voice' ? 'var(--accent)' : 'transparent';
+}
+
+function createChannel() {
+    if (!currentServer) return;
+    const name = document.getElementById('newChannelName').value.trim().toLowerCase().replace(/\s+/g, '-');
+    const topic = document.getElementById('newChannelTopic').value.trim();
+
+    if (!name) return alert('Kanal adı gerekli!');
+
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === currentServer.id);
+
+    const channel = {
+        id: generateId('ch'),
+        name,
+        type: newChannelType,
+        topic,
+        category: newChannelType === 'voice' ? 'Ses Kanalları' : 'Metin Kanalları'
+    };
+
+    server.channels.push(channel);
+    DB.set('servers', servers);
+    currentServer = server;
+
+    if (newChannelType === 'text') {
+        const messages = DB.get('messages') || {};
+        messages[channel.id] = [];
+        DB.set('messages', messages);
+    }
+
+    closeModal('createChannelModal');
+    document.getElementById('newChannelName').value = '';
+    document.getElementById('newChannelTopic').value = '';
+    renderChannels();
+    if (newChannelType === 'text') selectChannel(channel.id);
+}
+
+function deleteCurrentChannel() {
+    if (!currentServer || !currentChannel) return;
+    if (!confirm('Bu kanalı silmek istediğinize emin misiniz?')) return;
+
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === currentServer.id);
+    server.channels = server.channels.filter(c => c.id !== currentChannel.id);
+    DB.set('servers', servers);
+    currentServer = server;
+
+    const messages = DB.get('messages');
+    delete messages[currentChannel.id];
+    DB.set('messages', messages);
+
+    closeModal('channelSettingsModal');
+    currentChannel = null;
+
+    renderChannels();
+    const firstText = currentServer.channels.find(c => c.type === 'text');
+    if (firstText) selectChannel(firstText.id);
+}
+
+function saveChannelSettings() {
+    if (!currentServer || !currentChannel) return;
+    const name = document.getElementById('editChannelName').value.trim();
+    const topic = document.getElementById('editChannelTopic').value.trim();
+
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === currentServer.id);
+    const channel = server.channels.find(c => c.id === currentChannel.id);
+
+    if (name) channel.name = name.toLowerCase().replace(/\s+/g, '-');
+    channel.topic = topic;
+
+    DB.set('servers', servers);
+    currentServer = server;
+    currentChannel = channel;
+
+    closeModal('channelSettingsModal');
+    renderChannels();
+    selectChannel(currentChannel.id);
+}
+
+function joinServer(serverId) {
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === serverId);
+    if (!server) return;
+
+    if (!server.members.includes(currentUser.id)) {
+        server.members.push(currentUser.id);
+        DB.set('servers', servers);
+
+        // System message
+        const messages = DB.get('messages') || {};
+        const firstChannel = server.channels.find(c => c.type === 'text');
+        if (firstChannel) {
+            if (!messages[firstChannel.id]) messages[firstChannel.id] = [];
+            messages[firstChannel.id].push({
+                id: generateId('msg'),
+                userId: 'system',
+                content: `🎉 ${currentUser.username} sunucuya katıldı!`,
+                timestamp: Date.now(),
+                type: 'system'
+            });
+            DB.set('messages', messages);
+        }
+    }
+
+    renderServerList();
+    selectServer(serverId);
+}
+
+// ===== HOME / DISCOVER =====
+function goHome() {
+    currentView = 'home';
+    currentServer = null;
+    currentChannel = null;
+
+    document.querySelectorAll('.server-list .server-icon').forEach(el => el.classList.remove('active'));
+    document.querySelector('.server-icon.home-icon').classList.add('active');
+
+    document.getElementById('serverHeaderName').textContent = 'Lorensa Chat';
+    document.getElementById('homeChannels').style.display = 'block';
+    document.getElementById('serverChannels').style.display = 'none';
+
+    document.getElementById('homeView').classList.add('show');
+    document.getElementById('discoverView').classList.remove('show');
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('membersSidebar').classList.remove('visible');
+
+    renderDMList();
+    renderServerList();
+}
+
+function openDiscover() {
+    currentView = 'discover';
+
+    document.getElementById('homeView').classList.remove('show');
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('discoverView').classList.add('show');
+    document.getElementById('membersSidebar').classList.remove('visible');
+
+    renderDiscoverGrid();
+}
+
+function renderDiscoverGrid() {
+    const servers = DB.get('servers');
+    const container = document.getElementById('discoverGrid');
+    container.innerHTML = '';
+
+    const catIcons = { gaming: '🎮', education: '📚', music: '🎵', tech: '💻', art: '🎨', social: '💬', other: '📌' };
+
+    servers.filter(s => s.public).forEach(server => {
+        const isMember = server.members.includes(currentUser.id);
+        const card = document.createElement('div');
+        card.className = 'discover-card';
+        card.innerHTML = `
+            <div class="discover-card-banner" style="background:linear-gradient(135deg,${server.color},${server.color}88);display:flex;align-items:center;justify-content:center;font-size:36px;">${server.icon || catIcons[server.category] || '💬'}</div>
+            <div class="discover-card-body">
+                <h3>${server.name}</h3>
+                <p>${server.description || 'Açıklama yok'}</p>
+                <div class="discover-card-meta">
+                    <span><i class="fas fa-users"></i> ${server.members.length} üye</span>
+                    <span><i class="fas fa-hashtag"></i> ${server.channels.filter(c=>c.type==='text').length} kanal</span>
+                </div>
+                <button class="btn ${isMember ? 'btn-secondary' : 'btn-primary'}" style="width:100%;margin-top:12px;" onclick="event.stopPropagation();${isMember ? `selectServer('${server.id}')` : `joinServer('${server.id}')`}">
+                    ${isMember ? 'Sunucuya Git' : 'Katıl'}
+                </button>
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+function filterDiscover() {
+    const query = document.getElementById('discoverSearch').value.toLowerCase();
+    document.querySelectorAll('.discover-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+
+// ===== DM =====
+function renderDMList() {
+    const dms = DB.get('dms') || {};
+    const users = DB.get('users');
+    const container = document.getElementById('dmList');
+    container.innerHTML = '';
+
+    const myDMs = Object.keys(dms).filter(key => key.includes(currentUser.id));
+
+    if (myDMs.length === 0) {
+        container.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">Henüz DM yok</div>';
+        return;
+    }
+
+    myDMs.forEach(dmKey => {
+        const otherUserId = dmKey.split('_').find(id => id !== currentUser.id && id !== 'dm');
+        const otherUser = users.find(u => u.id === otherUserId);
+        if (!otherUser) return;
+
+        const div = document.createElement('div');
+        div.className = 'dm-item';
+        const color = otherUser.color || getAvatarColor(otherUser.id);
+        div.innerHTML = `
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${color},${color}88);display:flex;align-items:center;justify-content:center;font-size:12px;color:white;font-weight:700;position:relative;">
+                ${otherUser.username[0].toUpperCase()}
+                <div class="status-dot status-${otherUser.status}" style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border:2px solid var(--bg-dark);"></div>
+            </div>
+            <span style="font-size:14px;color:var(--text-secondary);">${otherUser.username}</span>`;
+        div.onclick = () => openDMChat(otherUser.id);
+        container.appendChild(div);
+    });
+}
+
+function startDM() {
+    const username = document.getElementById('dmUsername').value.trim();
+    if (!username) return;
+
+    const users = DB.get('users');
+    const targetUser = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (!targetUser) return alert('Kullanıcı bulunamadı!');
+    if (targetUser.id === currentUser.id) return alert('Kendinize mesaj gönderemezsiniz!');
+
+    closeModal('dmModal');
+    document.getElementById('dmUsername').value = '';
+    openDMChat(targetUser.id);
+}
+
+function openDMChat(targetUserId) {
+    const users = DB.get('users');
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return;
+
+    const dmKey = [currentUser.id, targetUserId].sort().join('_');
+    const dms = DB.get('dms') || {};
+    if (!dms[dmKey]) {
+        dms[dmKey] = [];
+        DB.set('dms', dms);
+    }
+
+    currentView = 'dm';
+    currentServer = null;
+    currentChannel = { id: dmKey, name: targetUser.username, type: 'dm', topic: '' };
+
+    document.getElementById('homeView').classList.remove('show');
+    document.getElementById('discoverView').classList.remove('show');
+    document.getElementById('chatView').style.display = 'flex';
+    document.getElementById('membersSidebar').classList.remove('visible');
+
+    document.getElementById('chatChannelIcon').className = 'fas fa-at';
+    document.getElementById('chatChannelName').textContent = targetUser.username;
+    document.getElementById('chatChannelTopic').textContent = '';
+    document.getElementById('messageInput').placeholder = targetUser.username + ' kullanıcısına mesaj gönder';
+
+    document.getElementById('channelWelcome').querySelector('h2').textContent = targetUser.username;
+    document.getElementById('channelWelcome').querySelector('p').textContent = 'Bu, ' + targetUser.username + ' ile DM konuşmanızın başlangıcı.';
+
+    // Render DM messages
+    renderDMMessages(dmKey);
+    renderDMList();
+}
+
+function renderDMMessages(dmKey) {
+    const dms = DB.get('dms') || {};
+    const msgs = dms[dmKey] || [];
+    const container = document.getElementById('messagesList');
+    const users = DB.get('users');
+    container.innerHTML = '';
+
+    msgs.forEach(msg => {
+        const user = users.find(u => u.id === msg.userId);
+        if (!user) return;
+
+        const color = user.color || getAvatarColor(user.id);
+        const div = document.createElement('div');
+        div.className = 'message-group';
+        div.innerHTML = `
+            <div class="msg-avatar" style="background:linear-gradient(135deg,${color},${color}88);">${user.username[0].toUpperCase()}</div>
+            <div class="msg-content">
+                <div class="msg-header">
+                    <span class="msg-username" style="color:${color}">${user.username}</span>
+                    <span class="msg-timestamp">${getTimeString(msg.timestamp)}</span>
+                </div>
+                <div class="msg-text">${formatMessage(msg.content)}</div>
+            </div>`;
+        container.appendChild(div);
+    });
+
+    scrollToBottom();
+}
+
+// Override sendMessage for DMs
+const originalSendMessage = sendMessage;
+sendMessage = function() {
+    if (currentView === 'dm' && currentChannel) {
+        const input = document.getElementById('messageInput');
+        const content = input.value.trim();
+        if (!content) return;
+
+        const dms = DB.get('dms') || {};
+        if (!dms[currentChannel.id]) dms[currentChannel.id] = [];
+
+        dms[currentChannel.id].push({
+            id: generateId('msg'),
+            userId: currentUser.id,
+            content: content,
+            timestamp: Date.now()
+        });
+
+        DB.set('dms', dms);
+        input.value = '';
+        input.style.height = 'auto';
+        renderDMMessages(currentChannel.id);
+        return;
+    }
+
+    // Regular channel message
+    if (!currentChannel || currentChannel.type === 'voice') return;
+    const input = document.getElementById('messageInput');
+    const content = input.value.trim();
+    if (!content && !selectedFile) return;
+
+    const messages = DB.get('messages') || {};
+    if (!messages[currentChannel.id]) messages[currentChannel.id] = [];
+
+    const msg = {
+        id: generateId('msg'),
+        userId: currentUser.id,
+        content: content,
+        timestamp: Date.now(),
+        reactions: [],
+        pinned: false
+    };
+
+    if (selectedFile) {
+        msg.file = selectedFile;
+        clearFileUpload();
+    }
+
+    messages[currentChannel.id].push(msg);
+    DB.set('messages', messages);
+
+    input.value = '';
+    input.style.height = 'auto';
+    renderMessages();
+
+    if (content.startsWith('/')) handleCommand(content, messages);
+};
+
+// ===== CONTEXT MENUS =====
+function showServerContextMenu(e, serverId) {
+    e.preventDefault();
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === serverId);
+    if (!server) return;
+
+    const menu = document.getElementById('contextMenu');
+    const isOwner = server.owner === currentUser.id || currentUser.role === 'admin';
+
+    let html = `
+        <div class="context-menu-item" onclick="selectServer('${serverId}');hideContextMenu()"><i class="fas fa-sign-in-alt"></i> Sunucuya Git</div>
+        <div class="context-menu-item" onclick="copyToClipboard('${server.id}');hideContextMenu()"><i class="fas fa-link"></i> Davet Linkini Kopyala</div>`;
+
+    if (isOwner) {
+        html += `
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="hideContextMenu()"><i class="fas fa-cog"></i> Sunucu Ayarları</div>
+        <div class="context-menu-item danger" onclick="deleteServer('${serverId}');hideContextMenu()"><i class="fas fa-trash"></i> Sunucuyu Sil</div>`;
+    } else {
+        html += `
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item danger" onclick="leaveServer('${serverId}');hideContextMenu()"><i class="fas fa-sign-out-alt"></i> Sunucudan Ayrıl</div>`;
+    }
+
+    menu.innerHTML = html;
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    menu.classList.add('show');
+}
+
+function showMemberContextMenu(e, userId) {
+    e.preventDefault();
+    const users = DB.get('users');
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    const menu = document.getElementById('contextMenu');
+    let html = `
+        <div class="context-menu-item" onclick="openDMChat('${userId}');hideContextMenu()"><i class="fas fa-envelope"></i> Mesaj Gönder</div>
+        <div class="context-menu-item" onclick="copyToClipboard('${user.username}${user.tag}');hideContextMenu()"><i class="fas fa-copy"></i> Kullanıcı Adını Kopyala</div>`;
+
+    if (currentUser.role === 'admin' && userId !== currentUser.id) {
+        html += `
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="kickUser('${userId}');hideContextMenu()"><i class="fas fa-user-minus"></i> Sunucudan At</div>
+        <div class="context-menu-item danger" onclick="banUser('${userId}');hideContextMenu()"><i class="fas fa-ban"></i> Yasakla</div>`;
+    }
+
+    menu.innerHTML = html;
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    menu.classList.add('show');
+}
+
+function hideContextMenu() {
+    document.getElementById('contextMenu').classList.remove('show');
+}
+
+document.addEventListener('click', hideContextMenu);
+
+function copyToClipboard(text) {
+    navigator.clipboard?.writeText(text).catch(() => {});
+    // Notification
+}
+
+function deleteServer(serverId) {
+    if (!confirm('Bu sunucuyu silmek istediğinize emin misiniz?')) return;
+    let servers = DB.get('servers');
+    servers = servers.filter(s => s.id !== serverId);
+    DB.set('servers', servers);
+    goHome();
+    renderServerList();
+}
+
+function leaveServer(serverId) {
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === serverId);
+    if (server) {
+        server.members = server.members.filter(m => m !== currentUser.id);
+        DB.set('servers', servers);
+    }
+    goHome();
+    renderServerList();
+}
+
+function kickUser(userId) {
+    if (!currentServer) return;
+    const servers = DB.get('servers');
+    const server = servers.find(s => s.id === currentServer.id);
+    if (server) {
+        server.members = server.members.filter(m => m !== userId);
+        DB.set('servers', servers);
+        currentServer = server;
+        renderMembers();
+    }
+}
+
+function banUser(userId) {
+    if (!confirm('Bu kullanıcıyı yasaklamak istediğinize emin misiniz?')) return;
+    const users = DB.get('users');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        user.banned = true;
+        DB.set('users', users);
+    }
+    kickUser(userId);
+}
+
+// ===== MODALS =====
+function openModal(id) {
+    document.getElementById(id).classList.add('show');
+
+    if (id === 'channelSettingsModal' && currentChannel) {
+        document.getElementById('editChannelName').value = currentChannel.name;
+        document.getElementById('editChannelTopic').value = currentChannel.topic || '';
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+function togglePinned() {
+    // Simple toggle - highlight pinned messages
+    const msgs = document.querySelectorAll('.message-group');
+    msgs.forEach(m => {
+        if (m.style.borderLeft) {
+            m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+}
+
+// ===== SETTINGS =====
+function openSettings() {
+    document.getElementById('settingsOverlay').classList.add('show');
+    showSettingsTab('account');
+    updateSettingsInfo();
+}
+
+function closeSettings() {
+    document.getElementById('settingsOverlay').classList.remove('show');
+}
+
+function showSettingsTab(tab) {
+    document.querySelectorAll('.settings-nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.settings-section').forEach(el => el.style.display = 'none');
+
+    event?.target?.classList.add('active');
+
+    const tabMap = {
+        'account': 'settingsAccount',
+        'profile': 'settingsProfile',
+        'appearance': 'settingsAppearance',
+        'notifications': 'settingsNotifications',
+        'voice': 'settingsVoice',
+        'privacy': 'settingsPrivacy',
+        'language': 'settingsLanguage',
+        'keybinds': 'settingsKeybinds',
+        'nitro': 'settingsNitro',
+        'admin': 'settingsAdmin'
+    };
+
+    const el = document.getElementById(tabMap[tab]);
+    if (el) el.style.display = 'block';
+
+    if (tab === 'admin') updateAdminPanel();
+    updateSettingsInfo();
+}
+
+function updateSettingsInfo() {
+    if (!currentUser) return;
+    document.getElementById('settingsAvatar').textContent = currentUser.username[0].toUpperCase();
+    document.getElementById('settingsAvatar').style.background = `linear-gradient(135deg, ${currentUser.color || '#5352ed'}, ${currentUser.color || '#5352ed'}88)`;
+    document.getElementById('settingsUsername').textContent = currentUser.username;
+    document.getElementById('settingsEmail').textContent = currentUser.email;
+    document.getElementById('settingsUsernameRow').textContent = currentUser.username + currentUser.tag;
+    document.getElementById('settingsEmailRow').textContent = currentUser.email;
+    document.getElementById('profileAbout').value = currentUser.about || '';
+    document.getElementById('profileStatus').value = currentUser.status;
+}
+
+function editUsername() {
+    const newName = prompt('Yeni kullanıcı adı:', currentUser.username);
+    if (!newName || newName.trim().length < 2) return;
+
+    const users = DB.get('users');
+    if (users.find(u => u.username === newName.trim() && u.id !== currentUser.id)) {
+        alert('Bu kullanıcı adı zaten kullanılıyor!');
+        return;
+    }
+
+    const user = users.find(u => u.id === currentUser.id);
+    user.username = newName.trim();
+    DB.set('users', users);
+    currentUser = user;
+    updateUserPanel();
+    updateSettingsInfo();
+}
+
+function editEmail() {
+    const newEmail = prompt('Yeni e-posta:', currentUser.email);
+    if (!newEmail || !newEmail.includes('@')) return;
+
+    const users = DB.get('users');
+    const user = users.find(u => u.id === currentUser.id);
+    user.email = newEmail.trim();
+    DB.set('users', users);
+    currentUser = user;
+    updateSettingsInfo();
+}
+
+function saveProfileAbout() {
+    const users = DB.get('users');
+    const user = users.find(u => u.id === currentUser.id);
+    user.about = document.getElementById('profileAbout').value;
+    DB.set('users', users);
+    currentUser = user;
+}
+
+function changeStatus() {
+    const status = document.getElementById('profileStatus').value;
+    const users = DB.get('users');
+    const user = users.find(u => u.id === currentUser.id);
+    user.status = status;
+    DB.set('users', users);
+    currentUser = user;
+    updateUserPanel();
+}
+
+function toggleTheme() {
+    const toggle = document.getElementById('themeToggle');
+    toggle.classList.toggle('active');
+    const theme = toggle.classList.contains('active') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    DB.set('theme', theme);
+}
+
+function changeFontSize() {
+    const size = document.getElementById('fontSizeSelect').value;
+    document.querySelectorAll('.msg-text').forEach(el => el.style.fontSize = size + 'px');
+    DB.set('fontSize', size);
+}
+
+function toggleCompact() {
+    document.getElementById('compactToggle').classList.toggle('active');
+}
+
+// ===== ADMIN PANEL =====
+function updateAdminPanel() {
+    if (currentUser.role !== 'admin') return;
+
+    const users = DB.get('users');
+    const servers = DB.get('servers');
+    const messages = DB.get('messages') || {};
+
+    let totalMsgs = 0;
+    Object.values(messages).forEach(arr => totalMsgs += arr.length);
+
+    document.getElementById('adminTotalUsers').textContent = users.length;
+    document.getElementById('adminTotalServers').textContent = servers.length;
+    document.getElementById('adminTotalMessages').textContent = totalMsgs;
+
+    // User list
+    const userList = document.getElementById('adminUserList');
+    userList.innerHTML = '';
+    users.forEach(user => {
+        const color = user.color || getAvatarColor(user.id);
+        userList.innerHTML += `
+        <div class="admin-user-item">
+            <div class="admin-user-left">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${color},${color}88);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;">${user.username[0].toUpperCase()}</div>
+                <div>
+                    <div style="font-weight:600;">${user.username}<span style="color:var(--text-muted);font-size:12px;">${user.tag}</span></div>
+                    <div style="font-size:11px;color:var(--text-muted);">${user.email} | ${user.role} | ${user.banned ? '🚫 Yasaklı' : '✅ Aktif'}</div>
+                </div>
+            </div>
+            <div class="admin-user-actions">
+                ${user.id !== currentUser.id ? `
+                    <button style="background:var(--yellow);color:#1a1a2e;" onclick="changeUserRole('${user.id}')">Rol</button>
+                    ${user.banned ? `<button style="background:var(--green);color:white;" onclick="unbanUser('${user.id}')">Yasağı Kaldır</button>` : `<button style="background:var(--red);color:white;" onclick="adminBanUser('${user.id}')">Yasakla</button>`}
+                    <button style="background:var(--red);color:white;" onclick="deleteUser('${user.id}')">Sil</button>
+                ` : '<span style="font-size:12px;color:var(--text-muted);">Siz</span>'}
+            </div>
+        </div>`;
+    });
+
+    // Server list
+    const serverList = document.getElementById('adminServerList');
+    serverList.innerHTML = '';
+    servers.forEach(server => {
+        serverList.innerHTML += `
+        <div class="admin-user-item">
+            <div class="admin-user-left">
+                <div style="width:36px;height:36px;border-radius:50%;background:${server.color};display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;">${server.icon || server.name[0]}</div>
+                <div>
+                    <div style="font-weight:600;">${server.name}</div>
+                    <div style="font-size:11px;color:var(--text-muted);">${server.members.length} üye | ${server.channels.length} kanal</div>
+                </div>
+            </div>
+            <div class="admin-user-actions">
+                <button style="background:var(--red);color:white;" onclick="deleteServer('${server.id}');updateAdminPanel();">Sil</button>
+            </div>
+        </div>`;
+    });
+}
+
+function changeUserRole(userId) {
+    const role = prompt('Yeni rol (admin, moderator, member):');
+    if (!['admin', 'moderator', 'member'].includes(role)) return alert('Geçersiz rol!');
+
+    const users = DB.get('users');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        user.role = role;
+        DB.set('users', users);
+        updateAdminPanel();
+    }
+}
+
+function adminBanUser(userId) {
+    if (!confirm('Bu kullanıcıyı yasaklamak istediğinize emin misiniz?')) return;
+    const users = DB.get('users');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        user.banned = true;
+        DB.set('users', users);
+        updateAdminPanel();
+    }
+}
+
+function unbanUser(userId) {
+    const users = DB.get('users');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        user.banned = false;
+        DB.set('users', users);
+        updateAdminPanel();
+    }
+}
+
+function deleteUser(userId) {
+    if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')) return;
+    let users = DB.get('users');
+    users = users.filter(u => u.id !== userId);
+    DB.set('users', users);
+
+    // Remove from all servers
+    const servers = DB.get('servers');
+    servers.forEach(s => {
+        s.members = s.members.filter(m => m !== userId);
+    });
+    DB.set('servers', servers);
+
+    updateAdminPanel();
+}
+
+function sendAnnouncement() {
+    const text = document.getElementById('adminAnnouncement').value.trim();
+    if (!text) return;
+
+    const servers = DB.get('servers');
+    const messages = DB.get('messages') || {};
+
+    servers.forEach(server => {
+        const firstChannel = server.channels.find(c => c.type === 'text');
+        if (firstChannel) {
+            if (!messages[firstChannel.id]) messages[firstChannel.id] = [];
+            messages[firstChannel.id].push({
+                id: generateId('msg'),
+                userId: 'system',
+                content: `📢 **Platform Duyurusu:** ${text}`,
+                timestamp: Date.now(),
+                type: 'system'
+            });
+        }
+    });
+
+    DB.set('messages', messages);
+    document.getElementById('adminAnnouncement').value = '';
+    alert('Duyuru tüm sunuculara gönderildi!');
+
+    if (currentChannel) renderMessages();
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSettings();
+        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+        document.getElementById('emojiPicker').classList.remove('show');
+    }
+});
+
+// ===== SPLASH SCREEN & INIT =====
+window.addEventListener('load', function() {
+    // Load theme
+    const savedTheme = DB.get('theme');
+    if (savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+
+    setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hidden');
+
+        // Check for existing session
+        const savedUserId = DB.get('currentUser');
+        if (savedUserId) {
+            const users = DB.get('users');
+            const user = users.find(u => u.id === savedUserId);
+            if (user && !user.banned) {
+                user.status = 'online';
+                DB.set('users', users);
+                currentUser = user;
+                enterApp();
+                return;
+            }
+        }
+
+        document.getElementById('authContainer').style.display = 'flex';
+    }, 2000);
+});
+
+// Close emoji picker on outside click
+document.addEventListener('click', function(e) {
+    const picker = document.getElementById('emojiPicker');
+    if (picker.classList.contains('show') && !picker.contains(e.target) && !e.target.closest('.input-actions-right')) {
+        picker.classList.remove('show');
+    }
+});
+
+// Auto-refresh messages periodically (simulating real-time)
+setInterval(() => {
+    if (currentView === 'server' && currentChannel && currentChannel.type === 'text') {
+        // Check for new messages
+    }
+}, 5000);
+
+// Handle Enter in auth forms
+document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleLogin();
+});
+
+document.getElementById('regPassword').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleRegister();
+});
+</script>
+</body>
+</html>
