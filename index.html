@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lorensa Chat</title>
+    <title>Lorensa Chat v8.0 (Cloud)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- UPGRADE: PeerJS (WebRTC P2P Arama Altyapısı) -->
+    
+    <!-- UPGRADE: PeerJS (WebRTC P2P Arama) -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    
+    <!-- UPGRADE: Firebase Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
     <style>
         :root{
             --bg-0:#1e1f22;--bg-1:#2b2d31;--bg-2:#313338;--bg-3:#383a40;
@@ -368,7 +374,7 @@
 <div id="splash">
     <div class="spl-logo"><i class="fas fa-comments"></i></div>
     <div style="font-size:20px;font-weight:800">Lorensa Chat</div>
-    <div style="font-size:11px;color:var(--tx-m);margin-top:4px">Yapımcı: Zahit Eryavuz</div>
+    <div style="font-size:11px;color:var(--tx-m);margin-top:4px">v8.0 Cloud • Yapımcı: Zahit Eryavuz</div>
     <div class="spl-bar"><div class="spl-fill"></div></div>
 </div>
 
@@ -478,11 +484,7 @@
 <div id="settingsPage"></div>
 
 <script>
-// Bu dosya çok uzun olduğu için core sistemi burada
-// Tam çalışan versiyon GitHub'a yüklenmek üzere optimize edilmiştir
-
 const $=id=>document.getElementById(id);
-const DB={g:k=>{try{return JSON.parse(localStorage.getItem('lc_'+k))}catch{return null}},s:(k,v)=>localStorage.setItem('lc_'+k,JSON.stringify(v)),d:k=>localStorage.removeItem('lc_'+k)};
 const COL=['#5865f2','#57f287','#ed4245','#fee75c','#eb459e','#9b59b6','#e67e22','#1abc9c','#e74c3c','#3498db'];
 const gc=s=>{let h=0;for(let i=0;i<s.length;i++)h=s.charCodeAt(i)+((h<<5)-h);return COL[Math.abs(h)%COL.length]};
 const gTag=()=>'#'+String(Math.floor(Math.random()*9999)).padStart(4,'0');
@@ -492,20 +494,73 @@ const EMOJIS='😀😁😂🤣😃😄😅😆😉😊😋😎😍🥰😘🙂�
 
 let me=null,curSrv=null,curCh=null,curView='home',isMuted=false,isDeafened=false,voiceActive=false,membersOpen=false;
 let callOn=false,callTimer=null,callSec=0,localStream=null,screenStream=null,mentionIdx=-1;
-let myPeer = null; // UPGRADE: PeerJS Nesnesi
-let currentCall = null; // UPGRADE: Aktif Arama
+let myPeer = null; 
+let currentCall = null; 
 
-// INIT DB
+// ==========================================
+// 🔥 FIREBASE CLOUD SYNC (BULUT SENKRONİZASYON)
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAIyQKDopHxT7CCRqiZGkz-bW_lYlrIubM",
+  authDomain: "lorensaproje-qwenn.firebaseapp.com",
+  databaseURL: "https://lorensaproje-qwenn-default-rtdb.firebaseio.com",
+  projectId: "lorensaproje-qwenn",
+  storageBucket: "lorensaproje-qwenn.firebasestorage.app",
+  messagingSenderId: "778875167832",
+  appId: "1:778875167832:web:52f27278d2aa59fa51d62d",
+  measurementId: "G-9L611H88ZH"
+};
+
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref('lorensa_v8');
+
+let lastLocalState = {};
+
+const DB = {
+    g: k => { try { return JSON.parse(localStorage.getItem('lc_' + k)) } catch { return null } },
+    s: (k, v) => {
+        const str = JSON.stringify(v);
+        localStorage.setItem('lc_' + k, str);
+        lastLocalState[k] = str;
+        dbRef.child(k).set(v); // Buluta anlık gönder
+    },
+    d: k => {
+        localStorage.removeItem('lc_' + k);
+        dbRef.child(k).remove();
+    }
+};
+
+// Anlık Değişiklikleri Dinle (Diğer cihazlardan gelen veriler için)
+dbRef.on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+        let needsRender = false;
+        ['users', 'servers', 'messages', 'dms'].forEach(k => {
+            const cloudStr = JSON.stringify(data[k]);
+            if (lastLocalState[k] !== cloudStr) {
+                localStorage.setItem('lc_' + k, cloudStr);
+                lastLocalState[k] = cloudStr;
+                needsRender = true;
+            }
+        });
+        
+        if (needsRender && me) {
+            renderServers();
+            if (curSrv) renderChannels();
+            if (curCh) renderMessages();
+            if (curView === 'home') renderHomePage();
+        }
+    }
+});
+
 function initDB(){
     if(!DB.g('users'))DB.s('users',[{id:'admin1',username:'Lorensa Chat',displayName:'Lorensa Chat',email:'zahiteryavuz2131@gmail.com',password:'ZahitBey',role:'admin',tag:'#0001',status:'online',about:'Platform Yöneticisi • Yapımcı: Zahit Eryavuz',createdAt:Date.now(),color:'#ed4245',banned:false,turbo:'turbo_pro',turboExp:Date.now()+365*864e5,coins:9999,avatar:null,banner:null,themes:['dark','light','midnight','ocean','sunset','forest','cherry'],badges:['admin','turbo','founder','official'],isOfficial:true,friends:[],pendingFriends:[],blocked:[]}]);
     if(!DB.g('servers'))DB.s('servers',[{id:'srv1',name:'Lorensa Topluluk',desc:'Lorensa Chat resmi sunucusu',icon:null,color:'#5865f2',owner:'admin1',members:['admin1'],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_msg']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{'admin1':['r_admin']},categories:[{id:'cat1',name:'Yazışma',channels:[{id:'ch_welcome',name:'hoş-geldiniz',type:'text',topic:'Yeni üyeleri karşılayın!'},{id:'ch_general',name:'genel',type:'text',topic:'Genel sohbet kanalı'},{id:'ch_media',name:'medya-paylaşım',type:'text',topic:'Fotoğraf ve video paylaşın'}]},{id:'cat2',name:'Ses Kanalları',channels:[{id:'ch_v1',name:'Genel Sohbet',type:'voice',users:[]},{id:'ch_v2',name:'Müzik',type:'voice',users:[]},{id:'ch_v3',name:'Oyun',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:'lorensa-topluluk'}]);
-    if(!DB.g('messages'))DB.s('messages',{'ch_general':[{id:'m1',uid:'admin1',text:'Lorensa Chat\'e hoş geldiniz! 🎉\n\nBurası resmi topluluk sunucusu. Kuralları okuyun ve eğlenin!',ts:Date.now()-36e5,reactions:[{e:'🎉',u:['admin1']},{e:'❤️',u:['admin1']}],pinned:false},{id:'m2',uid:'system',text:'Lorensa Chat v5.0 yayında! @everyone',ts:Date.now()-18e5,type:'system'}],'ch_welcome':[{id:'mw1',uid:'system',text:'Lorensa Topluluk\'a hoş geldiniz! 🌟',ts:Date.now()-72e5,type:'system'}]});
+    if(!DB.g('messages'))DB.s('messages',{'ch_general':[{id:'m1',uid:'admin1',text:'Lorensa Chat\'e hoş geldiniz! 🎉\n\nBurası resmi topluluk sunucusu. Kuralları okuyun ve eğlenin!',ts:Date.now()-36e5,reactions:[{e:'🎉',u:['admin1']},{e:'❤️',u:['admin1']}],pinned:false},{id:'m2',uid:'system',text:'Lorensa Chat v8.0 yayında! @everyone',ts:Date.now()-18e5,type:'system'}],'ch_welcome':[{id:'mw1',uid:'system',text:'Lorensa Topluluk\'a hoş geldiniz! 🌟',ts:Date.now()-72e5,type:'system'}]});
     if(!DB.g('dms'))DB.s('dms',{});
     if(!DB.g('gAccounts'))DB.s('gAccounts',[]);
 }
-initDB();
 
-// UPGRADE: PeerJS (WebRTC) Altyapı Kurulumu
 function initPeer() {
     if (!me) return;
     const peerId = `lorensa_${me.id}`; 
@@ -513,15 +568,8 @@ function initPeer() {
     
     myPeer = new Peer(peerId, {
         debug: 0,
-        config: {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:global.stun.twilio.com:3478' }
-            ]
-        }
+        config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
     });
-
-    myPeer.on('open', id => { console.log('Peer Bağlandı:', id); });
 
     myPeer.on('call', call => {
         const accept = confirm(`📞 Gelen Arama: ${call.metadata.callerName} arıyor. Kabul et?`);
@@ -530,24 +578,25 @@ function initPeer() {
                 .then(stream => {
                     call.answer(stream);
                     setupCallUI(call, stream, call.metadata.callerName, call.metadata.type);
-                    call.on('stream', remoteStream => { addRemoteStream(remoteStream, call.metadata.callerName); });
+                    call.on('stream', remoteStream => { 
+                        addRemoteStream(remoteStream, call.metadata.callerName); 
+                        $('callStatus').textContent = 'Bağlandı';
+                        $('callTimerEl').style.display = 'block';
+                        callSec = 0;
+                        callTimer = setInterval(() => {
+                            callSec++;
+                            $('callTimerEl').textContent = String(Math.floor(callSec/60)).padStart(2,'0') + ':' + String(callSec%60).padStart(2,'0');
+                        }, 1000);
+                    });
                     currentCall = call;
                     callOn = true;
                     $('callOverlay').classList.add('show');
-                    $('callTimerEl').style.display = 'block';
-                    callSec = 0;
-                    callTimer = setInterval(() => {
-                        callSec++;
-                        $('callTimerEl').textContent = String(Math.floor(callSec/60)).padStart(2,'0') + ':' + String(callSec%60).padStart(2,'0');
-                    }, 1000);
                 })
                 .catch(err => console.error('Mikrofon/Kamera hatası:', err));
         } else {
             call.close();
         }
     });
-
-    myPeer.on('error', err => { console.error('Peer Hatası:', err); });
 }
 
 // ===== AUTH =====
@@ -591,7 +640,6 @@ function doRegister(){
 $('lPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 $('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
 
-// Google Auth
 function openGoogle(){const accs=DB.g('gAccounts')||[];$('gAccList').innerHTML='';accs.forEach(a=>{$('gAccList').innerHTML+=`<div class="gm-acc" onclick="selectGAcc('${a.email}')"><div class="gm-av">${a.name[0].toUpperCase()}</div><div class="gm-info"><div class="n">${a.name}</div><div class="e">${a.email}</div></div></div>`});$('gEmail').value='';$('gName').value='';$('gModal').classList.add('show')}
 function selectGAcc(email){const accs=DB.g('gAccounts'),a=accs.find(x=>x.email===email);if(a)processGoogleUser(a.email,a.name);$('gModal').classList.remove('show')}
 function gNewAcc(){const email=$('gEmail').value.trim(),name=$('gName').value.trim();if(!email||!email.includes('@'))return alert('Geçerli e-posta gir.');if(!name)return alert('Adını gir.');const accs=DB.g('gAccounts')||[];if(!accs.find(a=>a.email===email)){accs.push({email,name});DB.s('gAccounts',accs)}processGoogleUser(email,name);$('gModal').classList.remove('show')}
@@ -599,15 +647,7 @@ function processGoogleUser(email,name){const users=DB.g('users');let u=users.fin
 
 function logout(){if(me){const users=DB.g('users'),u=users.find(x=>x.id===me.id);if(u){u.status='offline';DB.s('users',users)}}me=null;DB.d('cu');$('settingsPage').classList.remove('show');$('appPage').classList.remove('show');$('authPage').classList.add('show')}
 
-// ===== APP =====
-function enterApp(){
-    $('authPage').classList.remove('show');
-    $('appPage').classList.add('show');
-    updateUserArea();
-    renderServers();
-    goHome();
-    initPeer(); // UPGRADE: Giriş yapınca P2P bağlantıyı başlat
-}
+function enterApp(){$('authPage').classList.remove('show');$('appPage').classList.add('show');updateUserArea();renderServers();goHome();initPeer();}
 function updateUserArea(){if(!me)return;if(me.avatar){$('uaAvatar').style.backgroundImage=`url(${me.avatar})`;$('uaLetter').textContent=''}else{$('uaAvatar').style.background=me.color;$('uaLetter').textContent=me.displayName[0].toUpperCase()}$('uaName').textContent=me.displayName;$('uaTag').textContent=me.username;document.querySelector('.ua-av .dot').className='dot dot-'+(me.status==='online'?'on':me.status==='idle'?'idle':me.status==='dnd'?'dnd':'off')}
 
 function hasTurbo(u){return u&&u.turbo&&u.turboExp&&Date.now()<u.turboExp}
@@ -715,7 +755,7 @@ function renderMessages(){
             ${msg.uid===me.id||me.role==='admin'?`<button class="msg-act" onclick="deleteMessage('${msg.id}')" title="Sil"><i class="fas fa-trash"></i></button>`:''} 
         </div></div>`;
     });
-    setTimeout(enrichLinks, 200); // UPGRADE: Linkleri Zenginleştir
+    setTimeout(enrichLinks, 200); // Linkleri Zenginleştir
     scrollToBottom();
 }
 
@@ -742,7 +782,7 @@ function formatText(t){
     return t;
 }
 
-// UPGRADE: Akıllı Link Önizleme (Rich Embeds)
+// UPGRADE: Akıllı Link Önizleme (Microlink API)
 function enrichLinks() {
     const msgTexts = document.querySelectorAll('.msg-text a');
     msgTexts.forEach(async (a) => {
@@ -1104,7 +1144,36 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('settingsPage').c
 // INIT
 window.addEventListener('load',()=>{
     const theme=DB.g('theme');if(theme&&theme!=='dark')document.documentElement.setAttribute('data-theme',theme);
-    setTimeout(()=>{$('splash').classList.add('hide');const cu=DB.g('cu');if(cu){const users=DB.g('users'),u=users.find(x=>x.id===cu);if(u&&!u.banned){u.status='online';DB.s('users',users);me=u;enterApp();return}}$('authPage').classList.add('show')},1800)
+    
+    // Firebase'den veriyi senkronize et
+    dbRef.once('value').then(snapshot => {
+        if (!snapshot.exists()) {
+            initDB(); // İlk kurulum, firebase'e varsayılanları yazar
+        } else {
+            const data = snapshot.val();
+            if(data.users) localStorage.setItem('lc_users', JSON.stringify(data.users));
+            if(data.servers) localStorage.setItem('lc_servers', JSON.stringify(data.servers));
+            if(data.messages) localStorage.setItem('lc_messages', JSON.stringify(data.messages));
+            if(data.dms) localStorage.setItem('lc_dms', JSON.stringify(data.dms));
+        }
+        
+        setTimeout(()=>{
+            $('splash').classList.add('hide');
+            const cu=DB.g('cu');
+            if(cu){
+                const users=DB.g('users'),u=users.find(x=>x.id===cu);
+                if(u&&!u.banned){
+                    u.status='online';
+                    localStorage.setItem('lc_users', JSON.stringify(users));
+                    dbRef.child('users').set(users);
+                    me=u;
+                    enterApp();
+                    return;
+                }
+            }
+            $('authPage').classList.add('show');
+        }, 1000);
+    });
 });
 </script>
 </body>
