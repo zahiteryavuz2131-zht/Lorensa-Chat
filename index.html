@@ -1,17 +1,4 @@
-Haklısın, özür dilerim! 😔 Sorunu buldum: Firebase senkronizasyonu, bulutta olmayan bir anahtar için tarayıcı deposuna `"undefined"` yazıp depoyu **bozuyordu**, bu da `renderServers()` fonksiyonunu çökertip ekranı bembeyaz/bomboş bırakıyordu.
 
-Şimdi sana **kendi kendini tamir eden (self-healing)** versiyonu veriyorum. Bu kod:
-1. Bozuk depo kayıtlarını otomatik temizler,
-2. Bulut + yerel veriyi **akıllıca birleştirir** (hiçbir hesabın/sunucun kaybolmaz),
-3. Eksikse varsayılan veriyi yeniden oluşturur,
-4. Bir daha asla `undefined` yazıp çökmez.
-
-Kodu yapıştır, GitHub'a push'la, **Ctrl+F5** ile yenile. Depo kendini onaracak ve giriş ekranı/uygulama düzgün açılacak:
-
-```html
-<!DOCTYPE html>
-<html lang="tr">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lorensa Chat v8.1 (Cloud)</title>
@@ -796,4 +783,44 @@ window.addEventListener('load',()=>{
         localStorage.setItem('lc_dms', JSON.stringify(dmsMerged));
         // 3) Eksikleri tamamla
         initDB();
-        // 4) Birleşik hal
+              // 4) Birleşik hali buluta it (tüm cihazlar aynı veriyi görsün)
+        try {
+            dbRef.child('users').set(usersMerged);
+            dbRef.child('servers').set(serversMerged);
+            dbRef.child('messages').set(msgsMerged);
+            dbRef.child('dms').set(dmsMerged);
+        } catch(e){ console.error('Bulut yazma hatası:', e); }
+
+        // 5) Önbelleği eşitle (gereksiz render'ı önler)
+        SYNC_KEYS.forEach(k=>{ lastLocalState[k] = localStorage.getItem('lc_'+k); });
+
+        // 6) Uygulamayı başlat
+        setTimeout(()=>{
+            $('splash').classList.add('hide');
+            const cu = DB.g('cu');
+            if (cu) {
+                const users = DB.g('users')||[];
+                const u = users.find(x=>x.id===cu);
+                if (u && !u.banned) { u.status='online'; DB.s('users',users); me=u; enterApp(); return; }
+            }
+            $('authPage').classList.add('show');
+        }, 1000);
+    }).catch(err=>{
+        // Firebase'e ulaşılamazsa yerel verilerle çalış
+        console.error('Firebase bağlantı hatası:', err);
+        initDB();
+        setTimeout(()=>{
+            $('splash').classList.add('hide');
+            const cu = DB.g('cu');
+            if (cu) {
+                const users = DB.g('users')||[];
+                const u = users.find(x=>x.id===cu);
+                if (u && !u.banned) { me=u; enterApp(); return; }
+            }
+            $('authPage').classList.add('show');
+        }, 1000);
+    });
+});
+</script>
+</body>
+</html>
