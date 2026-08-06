@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Lorensa Chat v9.0 (Cloud)</title>
+<title>Lorensa Chat v9.1 (Cloud)</title>
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTG9yZW5zYSBDaGF0Iiwic2hvcnRfbmFtZSI6IkxvcmVuc2EiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFlMWYyMiIsInRoZW1lX2NvbG9yIjoiIzU4NjVmMiJ9">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -159,6 +159,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .vb-btn{width:32px;height:32px;border:none;border-radius:var(--rs);background:var(--bg-3);color:var(--tx-2);cursor:pointer;font-size:14px}.vb-btn.muted{background:rgba(218,55,60,.15);color:var(--rd)}.vb-btn.disc{background:rgba(218,55,60,.15);color:var(--rd)}
 .user-area{padding:0 8px;height:56px;background:var(--bg-float);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ua-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;position:relative;flex-shrink:0;background-size:cover;background-position:center;cursor:pointer}
+.ua-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .ua-av .dot{position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-radius:50%;border:3px solid var(--bg-float);transition:var(--tr)}
 .ua-av .dot.online{background:var(--gn);box-shadow:0 0 8px var(--gn)}
 .ua-av .dot.idle{background:var(--yl);box-shadow:0 0 8px var(--yl)}
@@ -180,7 +181,8 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 
 /* MESSAGES */
 .msg{display:flex;gap:16px;padding:4px 0;position:relative;border-radius:var(--rs)}.msg:hover{background:var(--bg-hover)}.msg:hover .msg-actions{display:flex}
-.msg-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;cursor:pointer;background-size:cover;background-position:center;margin-top:2px;position:relative}
+.msg-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;cursor:pointer;background-size:cover;background-position:center;margin-top:2px;position:relative;overflow:hidden}
+.msg-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .msg-av .status-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg-chat)}
 .msg-av .status-dot.online{background:var(--gn)}
 .msg-av .status-dot.idle{background:var(--yl)}
@@ -210,11 +212,15 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .pinned-msg{background:var(--bg-1);border-left:3px solid var(--yl);padding:8px 12px;border-radius:var(--rs);margin:4px 0}
 .pinned-msg .pin-header{font-size:11px;color:var(--tx-m);margin-bottom:4px}
 .msg .pinned-badge{background:var(--yl);color:#000;padding:0 6px;border-radius:3px;font-size:9px;font-weight:700}
+.msg .unsend-badge{background:var(--tx-m);color:#fff;padding:0 6px;border-radius:3px;font-size:9px;font-weight:700;font-style:italic}
 
 .msg-form{padding:0 16px 24px}
 .msg-box{background:var(--bg-input);border-radius:var(--r);display:flex;align-items:flex-end;gap:4px}
 .msg-box-btn{width:44px;height:44px;border:none;background:transparent;color:var(--tx-m);cursor:pointer;font-size:20px;flex-shrink:0;transition:var(--tr)}.msg-box-btn:hover{color:var(--tx-1)}
 #msgInput{flex:1;background:transparent;border:none;color:var(--tx-1);font-size:16px;padding:12px 4px;resize:none;outline:none;max-height:200px;min-height:22px;font-family:inherit}
+.reply-preview{display:none;padding:8px 12px;background:var(--bg-1);border-left:3px solid var(--ac);border-radius:var(--rs) var(--rs) 0 0;margin:0 16px;font-size:13px;color:var(--tx-2);align-items:center;gap:8px}
+.reply-preview.show{display:flex}
+.reply-preview .rp-close{cursor:pointer;color:var(--tx-m);margin-left:auto}
 .mention-popup{position:absolute;bottom:100%;left:0;right:0;background:var(--bg-float);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;max-height:200px;overflow-y:auto;z-index:50;margin-bottom:4px}.mention-popup.show{display:block}
 .mention-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer}.mention-item:hover,.mention-item.sel{background:var(--ac);color:#fff;border-radius:var(--rs)}
 .mention-item .mi-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;background-size:cover;background-position:center}
@@ -240,7 +246,8 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .members{width:var(--member-w);min-width:var(--member-w);background:var(--bg-1);border-left:1px solid var(--bd);overflow-y:auto;padding:8px 8px 8px 16px;display:none}.members.show{display:block}
 .mem-cat{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--tx-m);padding:16px 0 4px}
 .mem{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:var(--rs);cursor:pointer}.mem:hover{background:var(--bg-hover)}.mem.off{opacity:.3}
-.mem-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;position:relative;flex-shrink:0;background-size:cover;background-position:center}
+.mem-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;position:relative;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
+.mem-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .mem-av .dot{position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg-1)}
 .mem-av .dot.online{background:var(--gn)}
 .mem-av .dot.idle{background:var(--yl)}
@@ -316,7 +323,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .stat-value{font-size:28px;font-weight:800;color:var(--ac)}
 .stat-label{font-size:12px;color:var(--tx-m);margin-top:4px}
 
-/* SETTINGS - CONNECTIONS */
+/* CONNECTIONS */
 .connection-item{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg-1);border-radius:var(--rs);margin:4px 0;cursor:pointer;transition:var(--tr)}
 .connection-item:hover{background:var(--bg-hover)}
 .connection-item .conn-icon{font-size:28px;width:40px;text-align:center}
@@ -335,7 +342,8 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 
 /* CALL */
 #callOverlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:4000;display:none;flex-direction:column;align-items:center;justify-content:center}#callOverlay.show{display:flex}
-.call-av{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;font-weight:800;margin-bottom:16px;background-size:cover;background-position:center}
+.call-av{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;font-weight:800;margin-bottom:16px;background-size:cover;background-position:center;overflow:hidden}
+.call-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .call-name{font-size:20px;font-weight:700}.call-st{font-size:14px;color:var(--tx-m)}.call-timer{font-size:18px;color:var(--gn);font-weight:600;margin-top:8px}
 .call-btns{display:flex;gap:16px;margin-top:24px}
 .call-btn{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;font-size:20px;transition:var(--tr)}.call-btn.end{background:var(--rd);color:#fff}.call-btn.mute,.call-btn.cam,.call-btn.scr{background:var(--bg-3);color:var(--tx-1)}
@@ -353,7 +361,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .ctx-sep{height:1px;background:var(--bg-3);margin:4px 0}
 
 /* PROFILE POPUP */
-#profilePopup{position:fixed;width:300px;background:var(--bg-float);border-radius:var(--r);z-index:1500;display:none;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.5)}#profilePopup.show{display:block}
+#profilePopup{position:fixed;width:320px;background:var(--bg-float);border-radius:var(--r);z-index:1500;display:none;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.5)}#profilePopup.show{display:block}
 .profile-connections{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
 .profile-connection{width:28px;height:28px;border-radius:50%;background:var(--bg-1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:var(--tr)}
 .profile-connection:hover{background:var(--bg-active);transform:scale(1.1)}
@@ -363,7 +371,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .search-bar{padding:12px 16px;background:var(--bg-1);border-bottom:1px solid var(--bd);display:none}.search-bar.show{display:block}
 .search-bar input{width:100%;padding:8px 12px;border:none;border-radius:var(--rs);background:var(--bg-0);color:var(--tx-1);font-size:14px;outline:none}
 
-/* KEYBOARD SHORTCUTS */
+/* SHORTCUTS */
 .shortcut-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .shortcut-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-1);border-radius:var(--rs)}
 .shortcut-item .key{font-weight:600;color:var(--ac);background:var(--bg-0);padding:2px 8px;border-radius:var(--rs);font-size:12px}
@@ -377,6 +385,12 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 .pinned-item:last-child{border-bottom:none}
 .pinned-item .pin-text{flex:1;font-size:13px;color:var(--tx-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pinned-item .pin-author{font-size:11px;color:var(--tx-m)}
+
+/* GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.gallery-item{cursor:pointer;border-radius:var(--rs);overflow:hidden;aspect-ratio:1;background:var(--bg-1);display:flex;align-items:center;justify-content:center}
+.gallery-item img,.gallery-item video{width:100%;height:100%;object-fit:cover}
+.gallery-item video{background:#000}
 
 /* RESPONSIVE */
 @media(max-width:768px){
@@ -405,7 +419,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 </style>
 </head>
 <body>
-<div id="splash"><div class="spl-logo"><i class="fas fa-comments"></i></div><div style="font-size:20px;font-weight:800">Lorensa Chat</div><div style="font-size:11px;color:var(--tx-m);margin-top:4px">v9.0 Cloud • Yapımcı: Zahit Eryavuz</div><div class="spl-bar"><div class="spl-fill"></div></div><div id="splashErr" style="display:none;max-width:80%;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(218,55,60,.15);color:#ff8a8c;font-size:12px;word-break:break-word;text-align:center"></div></div>
+<div id="splash"><div class="spl-logo"><i class="fas fa-comments"></i></div><div style="font-size:20px;font-weight:800">Lorensa Chat</div><div style="font-size:11px;color:var(--tx-m);margin-top:4px">v9.1 Cloud • Yapımcı: Zahit Eryavuz</div><div class="spl-bar"><div class="spl-fill"></div></div><div id="splashErr" style="display:none;max-width:80%;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(218,55,60,.15);color:#ff8a8c;font-size:12px;word-break:break-word;text-align:center"></div></div>
 
 <div id="gModal"><div class="gm-card"><button class="gm-close" onclick="$('gModal').classList.remove('show')"><i class="fas fa-times"></i></button>
 <div class="gm-head"><div style="font-size:40px;font-weight:800;color:#4285F4">G</div><h3>Hesap seçin</h3><p>Lorensa Chat'e devam etmek için</p></div>
@@ -465,6 +479,8 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 
 <div class="modal-bg" id="soundboardModal"><div class="modal"><div class="modal-head"><h3>🔊 Soundboard</h3><button class="modal-x" onclick="closeModal('soundboardModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" id="soundboardBody"></div></div></div>
 
+<div class="modal-bg" id="galleryModal"><div class="modal lg"><div class="modal-head"><h3>🖼️ Medya Galerisi</h3><button class="modal-x" onclick="closeModal('galleryModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" id="galleryBody" style="max-height:70vh;overflow-y:auto"></div></div></div>
+
 <div class="ctx-menu" id="ctxMenu"></div>
 <div id="profilePopup"></div>
 <div id="settingsPage"></div>
@@ -490,6 +506,9 @@ let currentThreadMsg=null;
 let voiceConns={},editingChannelId=null;
 let activeDevices=[],userConnections=[];
 let notificationSound=null;
+let replyToMsg=null; // For reply feature
+let mediaRecorder=null; // For voice message
+let audioChunks=[];
 
 // === AUDIO & NOTIFICATION ===
 function playNotification(type='message'){
@@ -509,7 +528,7 @@ const firebaseConfig={apiKey:"AIzaSyAIyQKDopHxT7CCRqiZGkz-bW_lYlrIubM",authDomai
 firebase.initializeApp(firebaseConfig);
 const dbRef=firebase.database().ref('lorensa_v9');
 let lastLocalState={};
-const SYNC_KEYS=['users','servers','messages','dms','gAccounts','devices','connections','pins'];
+const SYNC_KEYS=['users','servers','messages','dms','gAccounts','devices','connections','pins','customSounds','blocked'];
 const DB={
  g:k=>{try{return JSON.parse(localStorage.getItem('lc_'+k))}catch{return null}},
  s:(k,v)=>{const str=JSON.stringify(v);localStorage.setItem('lc_'+k,str);lastLocalState[k]=str;if(v!==undefined&&v!==null)dbRef.child(k).set(v)},
@@ -543,7 +562,7 @@ function showAuthErr(m){$('authMsg').className='auth-msg err';$('authMsg').textC
 function showAuthOk(m){$('authMsg').className='auth-msg ok';$('authMsg').textContent=m}
 
 function doLogin(){const e=$('lEmail').value.trim(),p=$('lPass').value;if(!e||!p)return showAuthErr('Tüm alanları doldur.');const users=DB.g('users')||[],u=users.find(x=>(x.email===e||x.username===e)&&x.password===p);if(!u)return showAuthErr('E-posta veya şifre yanlış.');if(u.banned)return showAuthErr('Hesap devre dışı.');u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
-function doRegister(){const email=$('rEmail').value.trim(),name=$('rName').value.trim(),user=$('rUser').value.trim(),pass=$('rPass').value;if(!email||!name||!user||!pass)return showAuthErr('Tüm alanları doldur.');if(pass.length<6)return showAuthErr('Şifre en az 6 karakter.');const users=DB.g('users')||[];if(users.find(x=>x.email===email))return showAuthErr('E-posta kullanımda.');if(users.find(x=>x.username===user))return showAuthErr('Kullanıcı adı alınmış.');const nu={id:gId('u'),username:user,displayName:name,email,password:pass,role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(user),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:[],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[]};users.push(nu);DB.s('users',users);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms&&!ms.members.includes(nu.id)){ms.members.push(nu.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[nu.id]=['r_member'];DB.s('servers',svs)}showAuthOk('Hesap oluşturuldu!');authMode('login');$('lEmail').value=email}
+function doRegister(){const email=$('rEmail').value.trim(),name=$('rName').value.trim(),user=$('rUser').value.trim(),pass=$('rPass').value;if(!email||!name||!user||!pass)return showAuthErr('Tüm alanları doldur.');if(pass.length<6)return showAuthErr('Şifre en az 6 karakter.');const users=DB.g('users')||[];if(users.find(x=>x.email===email))return showAuthErr('E-posta kullanımda.');if(users.find(x=>x.username===user))return showAuthErr('Kullanıcı adı alınmış.');const nu={id:gId('u'),username:user,displayName:name,email,password:pass,role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(user),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:[],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null};users.push(nu);DB.s('users',users);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms&&!ms.members.includes(nu.id)){ms.members.push(nu.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[nu.id]=['r_member'];DB.s('servers',svs)}showAuthOk('Hesap oluşturuldu!');authMode('login');$('lEmail').value=email}
 
 $('lPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 $('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
@@ -551,7 +570,7 @@ $('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
 function openGoogle(){const accs=DB.g('gAccounts')||[];$('gAccList').innerHTML='';accs.forEach(a=>{$('gAccList').innerHTML+=`<div class="gm-acc" onclick="selectGAcc('${a.email}')"><div class="gm-av">${a.name[0].toUpperCase()}</div><div class="gm-info"><div class="n">${a.name}</div><div class="e">${a.email}</div></div></div>`});$('gEmail').value='';$('gName').value='';$('gModal').classList.add('show')}
 function selectGAcc(email){const a=(DB.g('gAccounts')||[]).find(x=>x.email===email);if(a)processGoogleUser(a.email,a.name);$('gModal').classList.remove('show')}
 function gNewAcc(){const email=$('gEmail').value.trim(),name=$('gName').value.trim();if(!email||!email.includes('@'))return alert('Geçerli e-posta gir.');if(!name)return alert('Adını gir.');const accs=DB.g('gAccounts')||[];if(!accs.find(a=>a.email===email)){accs.push({email,name});DB.s('gAccounts',accs)}processGoogleUser(email,name);$('gModal').classList.remove('show')}
-function processGoogleUser(email,name){const users=DB.g('users')||[];let u=users.find(x=>x.email===email);if(!u){u={id:gId('u'),username:name.replace(/\s/g,'').toLowerCase(),displayName:name,email,password:Math.random().toString(36).substr(2,10),role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(name),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:['google'],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[]};users.push(u);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms){ms.members.push(u.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[u.id]=['r_member'];DB.s('servers',svs)}}u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
+function processGoogleUser(email,name){const users=DB.g('users')||[];let u=users.find(x=>x.email===email);if(!u){u={id:gId('u'),username:name.replace(/\s/g,'').toLowerCase(),displayName:name,email,password:Math.random().toString(36).substr(2,10),role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(name),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:['google'],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null};users.push(u);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms){ms.members.push(u.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[u.id]=['r_member'];DB.s('servers',svs)}}u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
 
 function logout(){if(me){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(u){u.status='offline';DB.s('users',users)}}leaveVoice();me=null;DB.d('cu');$('settingsPage').classList.remove('show');$('serverSettingsPage').classList.remove('show');$('appPage').classList.remove('show');$('authPage').classList.add('show')}
 
@@ -754,20 +773,203 @@ function canManageMessages(){
 function canKick(){return hasPermission('kick')||hasPermission('all');}
 function canBan(){return hasPermission('ban')||hasPermission('all');}
 
-// === AVATAR HELPER ===
+// === AVATAR HELPER (GIF DESTEKLİ) ===
 const avHTML=(u,size,fs)=>{
 if(!u)return`<div style="width:${size}px;height:${size}px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:${fs}px;flex-shrink:0">?</div>`;
-if(u.avatar)return`<div style="width:${size}px;height:${size}px;border-radius:50%;background-image:url(${u.avatar});background-size:cover;background-position:center;flex-shrink:0"></div>`;
+if(u.avatar){
+  const isGif=u.avatar.startsWith('data:image/gif');
+  if(isGif){
+    return`<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  } else {
+    return`<div style="width:${size}px;height:${size}px;border-radius:50%;background-image:url(${u.avatar});background-size:cover;background-position:center;flex-shrink:0"></div>`;
+  }
+}
 return`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${u.color||'#5865f2'};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:${fs}px;flex-shrink:0">${(u.displayName||'?')[0].toUpperCase()}</div>`;
 };
 
-const GRADS=['linear-gradient(135deg,#000,#3a2a2a)','linear-gradient(135deg,#f06,#f9c)','linear-gradient(135deg,#e33,#f80)','linear-gradient(135deg,#f80,#fc6)','linear-gradient(135deg,#fd0,#ff8)','linear-gradient(135deg,#708,#c6f)','linear-gradient(135deg,#09f,#6cf)','linear-gradient(135deg,#0ca,#6fe)','linear-gradient(135deg,#390,#9c3)','linear-gradient(135deg,#222,#666)'];
-let srvSetTab='profil';
-function srvLog(s,text){if(!s.audit)s.audit=[];s.audit.unshift({ts:Date.now(),by:me.displayName,text});if(s.audit.length>60)s.audit.length=60}
+// === AVATAR YÜKLEME (GIF DESTEKLİ) ===
+function changeAvatar(){
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='image/*';
+  inp.onchange=e=>{
+    const f=e.target.files[0];
+    if(!f)return;
+    const isGif=f.type==='image/gif';
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const data=ev.target.result;
+      if(!isGif){
+        // Non-GIF: resmi sıkıştır
+        const img=new Image();
+        img.onload=()=>{
+          const c=document.createElement('canvas');
+          const S=128;
+          c.width=S;c.height=S;
+          const ctx=c.getContext('2d');
+          const m=Math.min(img.width,img.height);
+          ctx.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);
+          const compressed=c.toDataURL('image/jpeg',0.85);
+          saveAvatar(compressed);
+        };
+        img.src=data;
+      } else {
+        // GIF: direkt kaydet
+        saveAvatar(data);
+      }
+    };
+    reader.readAsDataURL(f);
+  };
+  inp.click();
+}
 
-// === INIT ===
+function saveAvatar(data){
+  const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);
+  if(!u)return;
+  u.avatar=data;
+  DB.s('users',users);
+  me=u;
+  updateUserArea();
+  renderSettingsContent('acc');
+}
+
+function removeAvatar(){
+  const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);
+  if(!u)return;
+  u.avatar=null;
+  DB.s('users',users);
+  me=u;
+  updateUserArea();
+  renderSettingsContent('acc');
+}
+
+// === GALLERY ===
+function openGallery(){
+  const st=curView==='dm'?'dms':'messages';
+  const d=DB.g(st)||{};
+  const msgs=(d[curCh.id]||[]).filter(m=>m.file&&(m.file.type||'').startsWith('image/')||m.file&&(m.file.type||'').startsWith('video/'));
+  const body=$('galleryBody');
+  if(!body)return;
+  if(!msgs.length){
+    body.innerHTML='<div style="text-align:center;padding:40px;color:var(--tx-m)">Bu kanalda medya yok</div>';
+  } else {
+    body.innerHTML='<div class="gallery-grid">'+msgs.map(m=>{
+      const isVideo=(m.file.type||'').startsWith('video/');
+      if(isVideo){
+        return`<div class="gallery-item" onclick="window.open('${m.file.data}','_blank')"><video src="${m.file.data}" muted></video></div>`;
+      } else {
+        return`<div class="gallery-item" onclick="window.open('${m.file.data}','_blank')"><img src="${m.file.data}" loading="lazy"></div>`;
+      }
+    }).join('')+'</div>';
+  }
+  openModal('galleryModal');
+}
+
+// === REPLY FEATURE ===
+function setReply(msgId){
+  const st=curView==='dm'?'dms':'messages';
+  const d=DB.g(st)||{};
+  const msg=(d[curCh.id]||[]).find(m=>m.id===msgId);
+  if(!msg)return;
+  replyToMsg=msg;
+  const u=(DB.g('users')||[]).find(x=>x.id===msg.uid);
+  const preview=$('replyPreview');
+  if(preview){
+    preview.innerHTML=`<i class="fas fa-reply" style="color:var(--ac)"></i> <strong>${u?u.displayName:'?'}</strong>: ${msg.text.substring(0,60)}${msg.text.length>60?'...':''} <span class="rp-close" onclick="clearReply()"><i class="fas fa-times"></i></span>`;
+    preview.classList.add('show');
+    $('msgInput').focus();
+  }
+}
+
+function clearReply(){
+  replyToMsg=null;
+  const preview=$('replyPreview');
+  if(preview)preview.classList.remove('show');
+}
+
+// === VOICE MESSAGE ===
+function startVoiceRecording(){
+  if(mediaRecorder && mediaRecorder.state==='recording'){
+    mediaRecorder.stop();
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    audioChunks=[];
+    mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=()=>{
+      const blob=new Blob(audioChunks,{type:'audio/mp3'});
+      const reader=new FileReader();
+      reader.onload=ev=>{
+        const data=ev.target.result;
+        // Send as file
+        window._selFile={name:'ses-kaydi.mp3',type:'audio/mp3',size:(blob.size/1024).toFixed(1)+' KB',data:data};
+        $('filePrev').classList.add('show');
+        $('filePrevText').textContent='🎤 Ses kaydı eklendi';
+        sendMessage();
+      };
+      reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    mediaRecorder.start();
+    // Buton görseli değiştir
+    const btn=$('voiceMsgBtn');
+    if(btn)btn.innerHTML='<i class="fas fa-stop" style="color:var(--rd)"></i>';
+    // 30 saniye sonra otomatik durdur
+    setTimeout(()=>{
+      if(mediaRecorder && mediaRecorder.state==='recording'){
+        mediaRecorder.stop();
+        if(btn)btn.innerHTML='<i class="fas fa-microphone"></i>';
+      }
+    },30000);
+  }).catch(e=>alert('Mikrofon erişimi reddedildi!'));
+}
+
+// === BLOCK / UNBLOCK ===
+function toggleBlockUser(uid){
+  if(!me)return;
+  const users=DB.g('users')||[];
+  const u=users.find(x=>x.id===me.id);
+  if(!u)return;
+  if(!u.blocked)u.blocked=[];
+  const idx=u.blocked.indexOf(uid);
+  if(idx>-1){
+    u.blocked.splice(idx,1);
+    alert('Engel kaldırıldı.');
+  } else {
+    u.blocked.push(uid);
+    alert('Kullanıcı engellendi. Mesajları görünmez olacak.');
+  }
+  DB.s('users',users);
+  me=u;
+  renderMessages();
+}
+
+function isBlocked(uid){
+  if(!me)return false;
+  return (me.blocked||[]).includes(uid);
+}
+
+// === UNSUND (MESAJ GERİ ÇEKME) ===
+function unsendMessage(mid){
+  if(!confirm('Bu mesajı geri çekmek istediğine emin misin?'))return;
+  const st=curView==='dm'?'dms':'messages';
+  const d=DB.g(st)||{};
+  const msgs=d[curCh.id]||[];
+  const idx=msgs.findIndex(m=>m.id===mid);
+  if(idx===-1)return;
+  const msg=msgs[idx];
+  if(msg.uid!==me.id)return alert('Sadece kendi mesajlarını çekebilirsin.');
+  // Geri çek: mesajı sil ve yerine sistem mesajı koy
+  msgs.splice(idx,1);
+  msgs.push({id:gId('m'),uid:'system',text:'🔁 Bu mesaj kullanıcı tarafından geri çekildi.',ts:Date.now(),type:'system',threads:[],reactions:[]});
+  DB.s(st,d);
+  renderMessages();
+}
+
+// === INIT DB ===
 function initDB(){
-if(!DB.g('users'))DB.s('users',[{id:'admin1',username:'lorensa_chat',displayName:'Lorensa Chat',email:'zahiteryavuz2131@gmail.com',password:'ZahitBey',role:'admin',tag:'#0001',status:'online',about:'Platform Yöneticisi • Yapımcı: Zahit Eryavuz',createdAt:Date.now(),color:'#ed4245',banned:false,turbo:'turbo_pro',turboExp:Date.now()+365*864e5,coins:9999,avatar:null,banner:null,themes:['dark','light'],badges:['admin','turbo','founder','official'],isOfficial:true,friends:[],pendingFriends:[],blocked:[],connections:[],devices:[]}]);
+if(!DB.g('users'))DB.s('users',[{id:'admin1',username:'lorensa_chat',displayName:'Lorensa Chat',email:'zahiteryavuz2131@gmail.com',password:'ZahitBey',role:'admin',tag:'#0001',status:'online',about:'Platform Yöneticisi • Yapımcı: Zahit Eryavuz',createdAt:Date.now(),color:'#ed4245',banned:false,turbo:'turbo_pro',turboExp:Date.now()+365*864e5,coins:9999,avatar:null,banner:null,themes:['dark','light'],badges:['admin','turbo','founder','official'],isOfficial:true,friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null}]);
 if(!DB.g('servers'))DB.s('servers',[{id:'srv1',name:'Lorensa Topluluk',desc:'Lorensa Chat resmi sunucusu',icon:null,color:'#5865f2',owner:'admin1',members:['admin1'],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{admin1:['r_admin']},categories:[{id:'cat1',name:'Yazışma',channels:[{id:'ch_welcome',name:'hoş-geldiniz',type:'text',topic:'Yeni üyeleri karşılayın!'},{id:'ch_general',name:'genel',type:'text',topic:'Genel sohbet'},{id:'ch_media',name:'medya-paylaşım',type:'text',topic:'Fotoğraf ve video'}]},{id:'cat2',name:'Ses Kanalları',channels:[{id:'ch_v1',name:'Genel Sohbet',type:'voice',users:[]},{id:'ch_v2',name:'Müzik',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:'lorensa-topluluk',tag:'LOR',welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[]}]);
 if(!DB.g('messages'))DB.s('messages',{ch_general:[{id:'m1',uid:'admin1',text:'Lorensa Chat\'e hoş geldiniz! 🎉',ts:Date.now()-36e5,reactions:[],pinned:false,threads:[]}]});
 if(!DB.g('dms'))DB.s('dms',{});
@@ -775,6 +977,7 @@ if(!DB.g('gAccounts'))DB.s('gAccounts',[]);
 if(!DB.g('devices'))DB.s('devices',{});
 if(!DB.g('pins'))DB.s('pins',{});
 if(!DB.g('customSounds'))DB.s('customSounds',{});
+if(!DB.g('blocked'))DB.s('blocked',{});
 }
 
 // === ENTER APP ===
@@ -783,7 +986,22 @@ window.__entered=true;$('authPage').classList.remove('show');$('appPage').classL
 
 function updateUserArea(){
 if(!me)return;const av=$('uaAvatar');
-if(me.avatar){av.style.backgroundImage=`url(${me.avatar})`;av.style.background='';av.style.backgroundSize='cover';av.style.backgroundPosition='center';$('uaLetter').textContent=''}else{av.style.backgroundImage='';av.style.background=me.color;$('uaLetter').textContent=(me.displayName||'U')[0].toUpperCase()}
+if(me.avatar){
+  const isGif=me.avatar.startsWith('data:image/gif');
+  if(isGif){
+    av.innerHTML=`<img src="${me.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="dot ${me.status||'online'}" id="statusDot"></div>`;
+  } else {
+    av.style.backgroundImage=`url(${me.avatar})`;
+    av.style.background='';
+    av.style.backgroundSize='cover';
+    av.style.backgroundPosition='center';
+    av.innerHTML=`<div class="dot ${me.status||'online'}" id="statusDot"></div>`;
+  }
+} else {
+  av.style.backgroundImage='';
+  av.style.background=me.color;
+  av.innerHTML=`<span id="uaLetter">${(me.displayName||'U')[0].toUpperCase()}</span><div class="dot ${me.status||'online'}" id="statusDot"></div>`;
+}
 $('uaName').textContent=me.displayName;$('uaTag').textContent=me.username;
 const dot=$('statusDot');if(dot){dot.className='dot '+me.status;if(me.status==='online')dot.style.boxShadow='0 0 8px var(--gn)';else if(me.status==='idle')dot.style.boxShadow='0 0 8px var(--yl)';else if(me.status==='dnd')dot.style.boxShadow='0 0 8px var(--rd)';else dot.style.boxShadow='none'}}
 
@@ -823,7 +1041,7 @@ window._voiceSnap=now}
 // === SELECT CHANNEL ===
 function selectChannel(chId){if(!curSrv)return;curCh=null;(curSrv.categories||[]).forEach(c=>(c.channels||[]).forEach(ch=>{if(ch.id===chId){curCh=ch;ch.lastRead=Date.now()}}));if(!curCh||!canSeeChannel(curCh))return;curView='server';DB.s('servers',DB.g('servers'));renderChannels();renderChat()}
 
-// === RENDER CHAT ===
+// === RENDER CHAT (geliştirilmiş) ===
 function renderChat(){const isDM=curView==='dm';const pinnedCount=getPinnedMessages().length;
 $('mainArea').innerHTML=`
 <div class="chat-head"><button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button><i class="fas ${isDM?'fa-at':'fa-hashtag'} ch-icon"></i><span class="ch-title">${curCh?curCh.name:''}</span>${!isDM?`<span class="ch-topic">${curCh&&curCh.topic||''}</span>`:''}
@@ -831,27 +1049,49 @@ $('mainArea').innerHTML=`
 <button class="head-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
 <button class="head-btn" onclick="toggleMembers()"><i class="fas fa-users"></i></button>
 <button class="head-btn" onclick="openPinnedMessages()"><i class="fas fa-thumbtack"></i>${pinnedCount?`<span style="font-size:10px;background:var(--yl);color:#000;padding:0 4px;border-radius:3px;margin-left:2px">${pinnedCount}</span>`:''}</button>
+<button class="head-btn" onclick="openGallery()"><i class="fas fa-images"></i></button>
 `}<button class="head-btn" onclick="openSoundboard()"><i class="fas fa-music"></i></button></div></div>
 <div class="search-bar" id="searchBar"><input placeholder="Mesajlarda ara..." oninput="searchMessages(this.value)"></div>
 <div class="messages" id="msgArea"><div class="msg-welcome"><div class="mw-icon"><i class="fas ${isDM?'fa-at':'fa-hashtag'}"></i></div><h3>${isDM?curCh.name:'#'+(curCh?curCh.name:'')}</h3><p>${isDM?'Bu, DM konuşmanızın başlangıcı.':(curCh&&curCh.topic)||'Kanalın başlangıcı.'}</p></div><div id="msgList"></div></div>
 <div class="typing-indicator" id="typingIndicator" style="display:none"><div class="dots"><span></span><span></span><span></span></div><span id="typingText"></span></div>
+<div class="reply-preview" id="replyPreview"></div>
 <div class="file-prev" id="filePrev"><span id="filePrevText"></span><button class="head-btn" onclick="clearFile()" style="margin-left:auto"><i class="fas fa-times"></i></button></div>
 <div class="msg-form" style="position:relative"><div class="mention-popup" id="mentionPopup"></div>
-<div class="msg-box"><button class="msg-box-btn" onclick="$('fileInput').click()"><i class="fas fa-plus-circle"></i></button><textarea id="msgInput" rows="1" onkeydown="handleMsgKey(event)" oninput="autoGrow(this);checkMention(this);handleTyping()" placeholder="${isDM?curCh.name+' kullanıcısına mesaj gönder':'#'+(curCh?curCh.name:'')+' kanalına mesaj gönder'}"></textarea><button class="msg-box-btn" onclick="toggleGIF()"><i class="fas fa-film"></i></button><button class="msg-box-btn" onclick="toggleEmoji()"><i class="fas fa-face-smile"></i></button><button class="msg-box-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button></div>
+<div class="msg-box"><button class="msg-box-btn" onclick="$('fileInput').click()"><i class="fas fa-plus-circle"></i></button>
+<button class="msg-box-btn" id="voiceMsgBtn" onclick="startVoiceRecording()" title="Sesli mesaj"><i class="fas fa-microphone"></i></button>
+<textarea id="msgInput" rows="1" onkeydown="handleMsgKey(event)" oninput="autoGrow(this);checkMention(this);handleTyping()" placeholder="${isDM?curCh.name+' kullanıcısına mesaj gönder':'#'+(curCh?curCh.name:'')+' kanalına mesaj gönder'}"></textarea>
+<button class="msg-box-btn" onclick="toggleGIF()"><i class="fas fa-film"></i></button>
+<button class="msg-box-btn" onclick="toggleEmoji()"><i class="fas fa-face-smile"></i></button>
+<button class="msg-box-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button></div>
 <div class="emoji-pick" id="emojiPick"></div><div class="gif-picker" id="gifPicker"></div><input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)" accept="image/*,video/*,audio/*,.pdf,.doc,.zip,.txt,.gif"></div>`;
 renderMessages();scrollToBottom()}
 
-// === RENDER MESSAGES ===
+// === RENDER MESSAGES (Block, Unsend, Reply entegre) ===
 function renderMessages(){if(!curCh)return;const isDM=curView==='dm';const all=isDM?((DB.g('dms')||{})[curCh.id]||[]):((DB.g('messages')||{})[curCh.id]||[]);const users=DB.g('users')||[];const el=$('msgList');if(!el)return;el.innerHTML='';
 const pins=DB.g('pins')||{};
 const pinKey=isDM?'dm_'+curCh.id:'srv_'+curSrv.id+'_'+curCh.id;
 const pinnedIds=pins[pinKey]||[];
 
-all.forEach(msg=>{if(msg.type==='system'){el.innerHTML+=`<div class="sys-msg">${formatText(msg.text)}</div>`;return}
+// Filter blocked users
+const blockedIds=me.blocked||[];
+const filtered=all.filter(msg=>{
+  if(msg.type==='system')return true;
+  if(blockedIds.includes(msg.uid))return false;
+  // Also hide blocked user's messages in DMs
+  if(isDM){
+    const otherId=curCh.id.split('_').find(id=>id!==me.id);
+    if(blockedIds.includes(otherId))return false;
+  }
+  return true;
+});
+
+filtered.forEach(msg=>{if(msg.type==='system'){el.innerHTML+=`<div class="sys-msg">${formatText(msg.text)}</div>`;return}
 const u=users.find(x=>x.id===msg.uid);if(!u)return;let badges='';if(u.role==='admin')badges+='<span class="msg-badge b-admin">ADMIN</span> ';if(u.isOfficial)badges+='<span class="msg-badge b-official">RESMİ</span> ';if(hasTurbo(u))badges+='<span class="msg-badge b-turbo">TURBO</span> ';
 if(curSrv){const rids=(curSrv.memberRoles&&curSrv.memberRoles[u.id])||[];rids.forEach(rid=>{const r=(curSrv.roles||[]).find(x=>x.id===rid);if(r)badges+=`<span class="role-badge" style="background:${r.color}20;color:${r.color};border:1px solid ${r.color}">${r.name}</span>`})}
 const isPinned=pinnedIds.includes(msg.id);
 const pinBadge=isPinned?'<span class="pinned-badge">📌 Sabit</span>':'';
+const isUnsent=msg.text && msg.text.includes('geri çekildi');
+const unsendBadge=isUnsent?'<span class="unsend-badge">↩️ Geri Çekildi</span>':'';
 let content=formatText(msg.text);
 if(msg.gif){content+=`<br><img src="${msg.gif}" class="msg-gif" onclick="window.open('${msg.gif}','_blank')">`}
 if(msg.file){if(msg.file.data){if((msg.file.type||'').startsWith('image/'))content+=`<br><img src="${msg.file.data}" class="msg-img">`;else if((msg.file.type||'').startsWith('video/'))content+=`<br><video src="${msg.file.data}" controls style="max-width:400px;border-radius:8px;margin-top:4px"></video>`;else if((msg.file.type||'').startsWith('audio/'))content+=`<br><audio src="${msg.file.data}" controls style="margin-top:4px"></audio>`}
@@ -859,10 +1099,11 @@ if(!msg.file.data||!(/^(image|video|audio)/.test(msg.file.type||'')))content+=`<
 let reactions='';if(msg.reactions&&msg.reactions.length)reactions='<div class="msg-reactions">'+msg.reactions.map(r=>`<div class="msg-react ${r.u.includes(me.id)?'on':''}" onclick="toggleReact('${msg.id}','${r.e}')">${r.e} <span>${r.u.length}</span></div>`).join('')+'</div>';
 let threadPreview='';if(msg.threads&&msg.threads.length){const lastReply=msg.threads[msg.threads.length-1];const replyUser=users.find(x=>x.id===lastReply.uid);threadPreview=`<div class="thread-preview" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i> ${msg.threads.length} yanıt • Son: ${replyUser?replyUser.displayName:'?'} - ${ts(lastReply.ts)}</div>`}
 const statusDot=`<div class="status-dot ${u.status||'offline'}"></div>`;
+const isOwn=msg.uid===me.id;
 el.innerHTML+=`<div class="msg"><div class="msg-av" onclick="showProfile('${u.id}')">${avHTML(u,40,16)}${statusDot}</div>
-<div class="msg-body"><div class="msg-header"><span class="msg-name" style="color:${getNameColor(u)}" onclick="showProfile('${u.id}')">${u.displayName}</span>${badges}${pinBadge}<span class="msg-time">${ts(msg.ts)}</span></div>
+<div class="msg-body"><div class="msg-header"><span class="msg-name" style="color:${getNameColor(u)}" onclick="showProfile('${u.id}')">${u.displayName}</span>${badges}${pinBadge}${unsendBadge}<span class="msg-time">${ts(msg.ts)}</span></div>
 <div class="msg-text">${content}</div>${msg.edited?'<span style="font-size:11px;color:var(--tx-m)">(düzenlendi)</span>':''}${reactions}${threadPreview}</div>
-<div class="msg-actions"><button class="msg-act" onclick="toggleReact('${msg.id}','👍')"><i class="fas fa-thumbs-up"></i></button><button class="msg-act" onclick="replyTo('${msg.id}')"><i class="fas fa-reply"></i></button><button class="msg-act" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i></button>${canManageMessages()?`<button class="msg-act" onclick="togglePinMessage('${msg.id}')"><i class="fas fa-thumbtack" style="color:${isPinned?'var(--yl)':'var(--tx-m)'}"></i></button>`:''}${msg.uid===me.id?`<button class="msg-act" onclick="editMessage('${msg.id}')"><i class="fas fa-pencil"></i></button>`:''}${(msg.uid===me.id||canManageMessages())?`<button class="msg-act" onclick="deleteMessage('${msg.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`});
+<div class="msg-actions"><button class="msg-act" onclick="toggleReact('${msg.id}','👍')"><i class="fas fa-thumbs-up"></i></button>${!isUnsent?`<button class="msg-act" onclick="setReply('${msg.id}')"><i class="fas fa-reply"></i></button>`:''}<button class="msg-act" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i></button>${canManageMessages()?`<button class="msg-act" onclick="togglePinMessage('${msg.id}')"><i class="fas fa-thumbtack" style="color:${isPinned?'var(--yl)':'var(--tx-m)'}"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="editMessage('${msg.id}')"><i class="fas fa-pencil"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="unsendMessage('${msg.id}')"><i class="fas fa-undo"></i></button>`:''}${(msg.uid===me.id||canManageMessages())?`<button class="msg-act" onclick="deleteMessage('${msg.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`});
 setTimeout(enrichLinks,200);scrollToBottom()}
 
 function getNameColor(u){if(!curSrv)return u.color;const rs=(curSrv.memberRoles&&curSrv.memberRoles[u.id])||[];for(const rid of rs){const r=(curSrv.roles||[]).find(x=>x.id===rid);if(r)return r.color}return u.color}
@@ -895,9 +1136,15 @@ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,200)+'px'}
 function scrollToBottom(){const el=$('msgArea');if(el)setTimeout(()=>el.scrollTop=el.scrollHeight,30)}
 
-// === SEND MESSAGE ===
-function sendMessage(){const inp=$('msgInput'),text=inp.value.trim();if(!text&&!window._selFile&&!window._selGif)return;const max=hasTurbo(me)?4000:2000;if(text.length>max)return alert('Maksimum '+max+' karakter!');
-const msgObj={id:gId('m'),uid:me.id,text,ts:Date.now(),reactions:[],pinned:false,edited:false,threads:[]};
+// === SEND MESSAGE (Reply entegre) ===
+function sendMessage(){const inp=$('msgInput'),text=inp.value.trim();if(!text&&!window._selFile&&!window._selGif&&!replyToMsg)return;const max=hasTurbo(me)?4000:2000;if(text.length>max)return alert('Maksimum '+max+' karakter!');
+let finalText=text;
+if(replyToMsg){
+  const u=(DB.g('users')||[]).find(x=>x.id===replyToMsg.uid);
+  finalText=`> @${u?u.displayName:'?'}: ${replyToMsg.text.substring(0,60)}${replyToMsg.text.length>60?'...':''}\n${text}`;
+  clearReply();
+}
+const msgObj={id:gId('m'),uid:me.id,text:finalText,ts:Date.now(),reactions:[],pinned:false,edited:false,threads:[]};
 if(window._selFile){msgObj.file=window._selFile;clearFile()}
 if(window._selGif){msgObj.gif=window._selGif;window._selGif=null}
 if(curView==='dm'){const d=DB.g('dms')||{};if(!d[curCh.id])d[curCh.id]=[];d[curCh.id].push(msgObj);DB.s('dms',d)}else{const m=DB.g('messages')||{};if(!m[curCh.id])m[curCh.id]=[];m[curCh.id].push(msgObj);DB.s('messages',m)}
@@ -927,7 +1174,7 @@ if(curView==='dm'){const d=DB.g('dms')||{};d[curCh.id]=(d[curCh.id]||[]).filter(
 function editMessage(mid){const st=curView==='dm'?'dms':'messages';const d=DB.g(st)||{};const msg=(d[curCh.id]||[]).find(m=>m.id===mid);if(!msg||(msg.uid!==me.id&&!canManageMessages()))return alert('Yetkiniz yok!');
 const nw=prompt('Mesajı düzenle:',msg.text);if(nw!==null){msg.text=nw;msg.edited=true;DB.s(st,d);renderMessages()}}
 function toggleReact(mid,emoji){const st=curView==='dm'?'dms':'messages';const d=DB.g(st)||{};const msg=(d[curCh.id]||[]).find(m=>m.id===mid);if(!msg)return;if(!msg.reactions)msg.reactions=[];let r=msg.reactions.find(x=>x.e===emoji);if(!r){r={e:emoji,u:[]};msg.reactions.push(r)}const i=r.u.indexOf(me.id);if(i>-1)r.u.splice(i,1);else r.u.push(me.id);if(!r.u.length)msg.reactions=msg.reactions.filter(x=>x.e!==emoji);DB.s(st,d);renderMessages()}
-function replyTo(mid){const st=curView==='dm'?'dms':'messages';const d=DB.g(st)||{};const msg=(d[curCh.id]||[]).find(m=>m.id===mid);if(!msg)return;const u=(DB.g('users')||[]).find(x=>x.id===msg.uid);$('msgInput').value=`> ${u?u.displayName:'?'}: ${String(msg.text).substring(0,40)}…\n`;$('msgInput').focus()}
+function replyTo(mid){setReply(mid)} // override
 
 // === FILE UPLOAD ===
 window._selFile=null;window._selGif=null;
@@ -995,7 +1242,7 @@ function sLeave(){try{const ctx=new AudioContext();const osc=ctx.createOscillato
 function replaceVideoTrack(newTrack){if(currentCall&&currentCall.peerConnection){const senders=currentCall.peerConnection.getSenders();const vs=senders.find(s=>s.track&&s.track.kind==='video');if(vs){vs.replaceTrack(newTrack);return true}}return false}
 async function startCall(type){if(curView!=='dm'||!curCh)return;const tid=curCh.id.split('_').find(id=>id!==me.id);if(!tid)return alert('Hedef bulunamadı.');
 const tu=(DB.g('users')||[]).find(u=>u.id===tid);if(!tu)return;await ensurePeer();callOn=true;$('callOverlay').classList.add('show');
-const av=$('callAv');if(tu.avatar){av.style.backgroundImage=`url(${tu.avatar})`;av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent=''}else{av.style.backgroundImage='';av.style.background=tu.color;av.textContent=tu.displayName[0]}
+const av=$('callAv');if(tu.avatar){const isGif=tu.avatar.startsWith('data:image/gif');if(isGif){av.innerHTML=`<img src="${tu.avatar}" style="width:100%;height:100%;object-fit:cover">`} else {av.style.backgroundImage=`url(${tu.avatar})`;av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent=''}} else {av.style.backgroundImage='';av.style.background=tu.color;av.textContent=tu.displayName[0]}
 $('callName').textContent=tu.displayName;$('callStatus').textContent='Aranıyor...';$('callTimerEl').style.display='none';$('screenBox').style.display='none';$('callVids').innerHTML='';
 try{localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==='video'});
 if(type==='video')camTrack=localStream.getVideoTracks()[0]||null;
@@ -1017,7 +1264,8 @@ async function toggleCallScr(){const on=!$('cScr').classList.contains('on');$('c
 // === HOME / DM ===
 function goHome(){curView='home';curSrv=null;curCh=null;renderServers();$('sideTitle').textContent='Lorensa Chat';renderHomeChannels();renderHomePage()}
 function renderHomeChannels(){$('channelList').innerHTML=`<div style="padding:8px"><div class="ch" onclick="showFriendsPage()"><i class="fas fa-user-friends"></i><span class="ch-name">Arkadaşlar</span></div><div class="ch" onclick="openDiscover()"><i class="fas fa-compass"></i><span class="ch-name">Keşfet</span></div></div><div style="padding:8px 12px;font-size:12px;font-weight:700;color:var(--tx-m);display:flex;justify-content:space-between;text-transform:uppercase">DİREKT MESAJLAR <i class="fas fa-plus" style="cursor:pointer" onclick="openModal('dmModal')"></i></div><div id="dmListEl"></div>`;renderDMList()}
-function renderDMList(){const dms=DB.g('dms')||{},users=DB.g('users')||[],el=$('dmListEl');if(!el||!me)return;el.innerHTML='';Object.keys(dms).filter(k=>k.includes(me.id)).forEach(k=>{const oid=k.split('_').filter(x=>x!==me.id)[0];const ou=users.find(u=>u.id===oid);if(!ou)return;el.innerHTML+=`<div class="ch" onclick="openDMChat('${ou.id}')"><div style="position:relative;flex-shrink:0">${avHTML(ou,24,10)}<div class="status-dot ${ou.status||'offline'}" style="position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border:2px solid var(--bg-1)"></div></div><span class="ch-name">${ou.displayName}</span></div>`})}
+function renderDMList(){const dms=DB.g('dms')||{},users=DB.g('users')||[],el=$('dmListEl');if(!el||!me)return;el.innerHTML='';const blocked=me.blocked||[];
+Object.keys(dms).filter(k=>k.includes(me.id)).forEach(k=>{const oid=k.split('_').filter(x=>x!==me.id)[0];if(blocked.includes(oid))return;const ou=users.find(u=>u.id===oid);if(!ou)return;el.innerHTML+=`<div class="ch" onclick="openDMChat('${ou.id}')"><div style="position:relative;flex-shrink:0">${avHTML(ou,24,10)}<div class="status-dot ${ou.status||'offline'}" style="position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border:2px solid var(--bg-1)"></div></div><span class="ch-name">${ou.displayName}</span></div>`})}
 function renderHomePage(){$('mainArea').innerHTML=`<div class="chat-head"><button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button><i class="fas fa-user-friends ch-icon"></i><span class="ch-title">Arkadaşlar</span></div><div style="flex:1;overflow-y:auto;padding:16px" id="homeContent"></div>`;showFriendsPage()}
 
 function showFriendsPage(){const users=DB.g('users')||[],el=$('homeContent');if(!el||!me)return;let h=`<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-g" onclick="openModal('addFriendModal')"><i class="fas fa-user-plus"></i> Arkadaş Ekle</button><button class="btn btn-p" onclick="renderDevicesModal()"><i class="fas fa-laptop"></i> Cihazlarım</button><button class="btn btn-p" onclick="renderConnectionsModal()"><i class="fas fa-link"></i> Bağlantılar</button><button class="btn btn-p" onclick="renderSoundboard()"><i class="fas fa-music"></i> Soundboard</button></div>`;
@@ -1031,8 +1279,8 @@ el.innerHTML=h}
 function sendFriendRequest(){const inp=$('addFriendInput').value.trim();if(!inp)return;const users=DB.g('users')||[],tu=users.find(u=>u.username.toLowerCase()===inp.toLowerCase()||u.displayName.toLowerCase()===inp.toLowerCase());if(!tu)return alert('Kullanıcı bulunamadı!');if(tu.id===me.id)return alert('Kendine istek atamazsın.');if((me.friends||[]).includes(tu.id))return alert('Zaten arkadaşsınız.');if(!tu.pendingFriends)tu.pendingFriends=[];if(!tu.pendingFriends.includes(me.id))tu.pendingFriends.push(me.id);DB.s('users',users);closeModal('addFriendModal');$('addFriendInput').value='';alert(tu.displayName+' kişisine istek gönderildi!')}
 function acceptFriend(uid){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id),f=users.find(x=>x.id===uid);if(!u||!f)return;if(!u.friends)u.friends=[];if(!f.friends)f.friends=[];u.friends.push(uid);f.friends.push(me.id);u.pendingFriends=(u.pendingFriends||[]).filter(x=>x!==uid);DB.s('users',users);me=u;showFriendsPage()}
 function declineFriend(uid){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.pendingFriends=(u.pendingFriends||[]).filter(x=>x!==uid);DB.s('users',users);me=u;showFriendsPage()}
-function startDM(){const un=$('dmUserInput').value.trim();if(!un)return;const tu=(DB.g('users')||[]).find(u=>u.username.toLowerCase()===un.toLowerCase()||u.displayName.toLowerCase()===un.toLowerCase());if(!tu)return alert('Kullanıcı bulunamadı!');if(tu.id===me.id)return alert('Kendine mesaj atamazsın.');closeModal('dmModal');$('dmUserInput').value='';openDMChat(tu.id)}
-function openDMChat(tid){const tu=(DB.g('users')||[]).find(u=>u.id===tid);if(!tu)return;const dk=[me.id,tid].sort().join('_');const d=DB.g('dms')||{};if(!d[dk]){d[dk]=[];DB.s('dms',d)}curView='dm';curSrv=null;curCh={id:dk,name:tu.displayName,type:'dm'};renderHomeChannels();renderChat()}
+function startDM(){const un=$('dmUserInput').value.trim();if(!un)return;const tu=(DB.g('users')||[]).find(u=>u.username.toLowerCase()===un.toLowerCase()||u.displayName.toLowerCase()===un.toLowerCase());if(!tu)return alert('Kullanıcı bulunamadı!');if(tu.id===me.id)return alert('Kendine mesaj atamazsın.');if((me.blocked||[]).includes(tu.id))return alert('Bu kullanıcıyı engellediniz.');closeModal('dmModal');$('dmUserInput').value='';openDMChat(tu.id)}
+function openDMChat(tid){const tu=(DB.g('users')||[]).find(u=>u.id===tid);if(!tu)return;if((me.blocked||[]).includes(tid))return alert('Bu kullanıcıyı engellediniz.');const dk=[me.id,tid].sort().join('_');const d=DB.g('dms')||{};if(!d[dk]){d[dk]=[];DB.s('dms',d)}curView='dm';curSrv=null;curCh={id:dk,name:tu.displayName,type:'dm'};renderHomeChannels();renderChat()}
 
 // === SERVER / CATEGORY ===
 function createServer(){const name=$('newSrvName').value.trim();if(!name)return alert('Sunucu adı gerekli.');const svs=DB.g('servers')||[];const srv={id:gId('s'),name,desc:$('newSrvDesc').value.trim(),icon:null,color:COL[Math.floor(Math.random()*COL.length)],owner:me.id,members:[me.id],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{},categories:[{id:gId('cat'),name:'Yazışma',channels:[{id:gId('ch'),name:'genel',type:'text',topic:'Genel sohbet'}]},{id:gId('cat'),name:'Ses Kanalları',channels:[{id:gId('ch'),name:'Genel Ses',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:gId('inv'),tag:name.substring(0,3).toUpperCase(),welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[]};srv.memberRoles[me.id]=['r_admin'];svs.push(srv);DB.s('servers',svs);const m=DB.g('messages')||{};srv.categories[0].channels.forEach(ch=>{m[ch.id]=[{id:gId('m'),uid:'system',text:'🎉 **'+name+'** oluşturuldu!',ts:Date.now(),type:'system',threads:[]}]});DB.s('messages',m);closeModal('createServerModal');renderServers();selectServer(srv.id)}
@@ -1070,13 +1318,16 @@ function renderMembers(){if(!curSrv)return;const el=$('membersBar'),users=DB.g('
 if(on.length){el.innerHTML+=`<div class="mem-cat">ÇEVRİMİÇİ — ${on.length}</div>`;on.forEach(u=>{el.innerHTML+=`<div class="mem" onclick="showProfile('${u.id}')"><div class="mem-av">${avHTML(u,32,12)}<div class="dot ${u.status||'online'}"></div></div><div class="mem-name" style="color:${getNameColor(u)}">${u.displayName}</div></div>`})}
 if(off.length){el.innerHTML+=`<div class="mem-cat">ÇEVRİMDIŞI — ${off.length}</div>`;off.forEach(u=>{el.innerHTML+=`<div class="mem off" onclick="showProfile('${u.id}')"><div class="mem-av">${avHTML(u,32,12)}<div class="dot offline"></div></div><div class="mem-name">${u.displayName}</div></div>`})}}
 
-// === PROFILE ===
+// === PROFILE (geliştirilmiş - Custom Status, Block) ===
 function showProfile(uid){const u=(DB.g('users')||[]).find(x=>x.id===uid);if(!u)return;const pp=$('profilePopup');let badges='';if(u.role==='admin')badges+='<span class="msg-badge b-admin">ADMIN</span> ';if(u.isOfficial)badges+='<span class="msg-badge b-official">RESMİ</span> ';if(hasTurbo(u))badges+='<span class="msg-badge b-turbo">TURBO</span> ';
 if(curSrv){const rids=(curSrv.memberRoles&&curSrv.memberRoles[u.id])||[];rids.forEach(rid=>{const r=(curSrv.roles||[]).find(x=>x.id===rid);if(r)badges+=`<span class="role-badge" style="background:${r.color}20;color:${r.color};border:1px solid ${r.color}">${r.name}</span>`})}
 const conns=(u.connections||[]).map(c=>CONNECTION_TYPES[c]).filter(Boolean);
 let connHtml='';
 if(conns.length){connHtml='<div class="profile-connections">'+conns.map(c=>`<div class="profile-connection connected" style="color:${c.color}" title="${c.name}"><i class="fab ${c.icon}"></i></div>`).join('')+'</div>'}
-pp.innerHTML=`<div style="height:60px;background:${u.banner?`url(${u.banner})`:`linear-gradient(135deg,${u.color},${u.color}88)`};background-size:cover"></div><div style="padding:36px 16px 16px;position:relative"><div style="width:64px;height:64px;border-radius:50%;position:absolute;top:-32px;left:16px;border:4px solid var(--bg-float);overflow:hidden">${avHTML(u,64,24)}</div><div style="font-weight:700;font-size:18px">${u.displayName}</div><div style="font-size:13px;color:var(--tx-m);margin-bottom:4px">${u.username}</div><div style="margin-bottom:8px">${badges}</div>${connHtml}${u.about?`<div style="font-size:13px;color:var(--tx-2);padding:10px;background:var(--bg-1);border-radius:var(--rs);margin-bottom:8px">${u.about}</div>`:''}<div style="font-size:11px;color:var(--tx-m)">Katılım: ${new Date(u.createdAt).toLocaleDateString('tr-TR')}</div>${uid!==me.id?`<div style="margin-top:10px"><button class="btn btn-p" style="width:100%" onclick="openDMChat('${uid}');$('profilePopup').classList.remove('show')">Mesaj</button></div>`:''}</div>`;
+const customStatus=u.customStatus?`<div style="font-size:13px;color:var(--tx-2);padding:4px 0">${u.customStatus}</div>`:'';
+const isBlocked=(me.blocked||[]).includes(uid);
+pp.innerHTML=`<div style="height:60px;background:${u.banner?`url(${u.banner})`:`linear-gradient(135deg,${u.color},${u.color}88)`};background-size:cover"></div><div style="padding:36px 16px 16px;position:relative"><div style="width:64px;height:64px;border-radius:50%;position:absolute;top:-32px;left:16px;border:4px solid var(--bg-float);overflow:hidden">${avHTML(u,64,24)}</div><div style="font-weight:700;font-size:18px">${u.displayName}</div><div style="font-size:13px;color:var(--tx-m);margin-bottom:4px">${u.username}</div>${customStatus}<div style="margin-bottom:8px">${badges}</div>${connHtml}${u.about?`<div style="font-size:13px;color:var(--tx-2);padding:10px;background:var(--bg-1);border-radius:var(--rs);margin-bottom:8px">${u.about}</div>`:''}<div style="font-size:11px;color:var(--tx-m)">Katılım: ${new Date(u.createdAt).toLocaleDateString('tr-TR')}</div>
+${uid!==me.id?`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p" style="flex:1" onclick="openDMChat('${uid}');$('profilePopup').classList.remove('show')">Mesaj</button><button class="btn ${isBlocked?'btn-g':'btn-d'}" style="flex:1" onclick="toggleBlockUser('${uid}');$('profilePopup').classList.remove('show')">${isBlocked?'Engeli Kaldır':'Engelle'}</button></div>`:''}</div>`;
 pp.style.top='50%';pp.style.left='50%';pp.style.transform='translate(-50%,-50%)';pp.classList.add('show')}
 
 // === CONTEXT ===
@@ -1171,11 +1422,12 @@ function toggleWelcome(el){const svs=DB.g('servers'),s=svs.find(x=>x.id===curSrv
 function saveWelcome(){const svs=DB.g('servers'),s=svs.find(x=>x.id===curSrv.id);s.welcome.message=$('welcomeMsg').value;DB.s('servers',svs);alert('Kaydedildi!');renderSrvSet()}
 function openSoundboard(){renderSoundboard()}
 
-// === USER SETTINGS ===
+// === USER SETTINGS (geliştirilmiş - Custom Status) ===
 function openSettings(){$('settingsPage').innerHTML=`<div class="set-wrap"><div class="set-nav">
 <div class="sn-cat">Kullanıcı Ayarları</div>
 <div class="sn-item on" onclick="setTab('acc',this)">Hesabım</div>
 <div class="sn-item" onclick="setTab('prof',this)">Profil</div>
+<div class="sn-item" onclick="setTab('status',this)">Özel Durum</div>
 <div class="sn-item" onclick="setTab('theme',this)">Görünüm</div>
 <div class="sn-item" onclick="setTab('accessibility',this)">Erişilebilirlik</div>
 <div class="sn-item" onclick="setTab('audio',this)">Ses ve Görüntü</div>
@@ -1186,20 +1438,23 @@ function openSettings(){$('settingsPage').innerHTML=`<div class="set-wrap"><div 
 <div class="sn-item" onclick="setTab('streamer',this)">Yayıncı Modu</div>
 <div class="sn-item" onclick="setTab('advanced',this)">Gelişmiş</div>
 <div class="sn-item" onclick="setTab('activity',this)">Etkinlik</div>
+<div class="sn-item" onclick="setTab('blocked',this)">Engellenenler</div>
 <div class="sn-cat"></div>
 <div class="sn-item red" onclick="logout()"><i class="fas fa-arrow-right-from-bracket"></i> Çıkış</div>
 </div><div class="set-main"><button class="set-close" onclick="$('settingsPage').classList.remove('show')"><i class="fas fa-times"></i></button><div id="setContent"></div></div></div>`;$('settingsPage').classList.add('show');renderSettingsContent('acc')}
 function setTab(t,el){document.querySelectorAll('#settingsPage .sn-item').forEach(e=>e.classList.remove('on'));if(el)el.classList.add('on');renderSettingsContent(t)}
 
 function renderSettingsContent(t){const el=$('setContent');if(!el||!me)return;
-if(t==='acc')el.innerHTML=`<div class="set-section on"><h2>Hesabım</h2><div class="set-card"><div style="display:flex;gap:16px;align-items:center;margin-bottom:16px"><div style="position:relative">${avHTML(me,80,30)}</div><div><div style="font-size:20px;font-weight:800">${me.displayName}</div><div style="font-size:13px;color:var(--tx-m)">${me.username} • ${me.email}</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn btn-p" onclick="changeAvatar()">Avatar Değiştir</button>${me.avatar?`<button class="btn btn-s" style="color:var(--rd)" onclick="removeAvatar()">Kaldır</button>`:''}</div></div></div>
+if(t==='acc'){el.innerHTML=`<div class="set-section on"><h2>Hesabım</h2><div class="set-card"><div style="display:flex;gap:16px;align-items:center;margin-bottom:16px"><div style="position:relative">${avHTML(me,80,30)}</div><div><div style="font-size:20px;font-weight:800">${me.displayName}</div><div style="font-size:13px;color:var(--tx-m)">${me.username} • ${me.email}</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn btn-p" onclick="changeAvatar()">Avatar Değiştir (GIF destekli)</button>${me.avatar?`<button class="btn btn-s" style="color:var(--rd)" onclick="removeAvatar()">Kaldır</button>`:''}</div></div></div>
 <div class="set-row"><div><div class="set-label">Görünen Ad</div><div class="set-desc">${me.displayName}</div></div><button class="btn btn-p" onclick="editDisplayName()">Düzenle</button></div>
 <div class="set-row"><div><div class="set-label">Kullanıcı Adı</div><div class="set-desc">${me.username}</div></div><button class="btn btn-p" onclick="editUsername()">Düzenle</button></div>
 <div class="set-row"><div><div class="set-label">E-posta</div><div class="set-desc">${me.email}</div></div><button class="btn btn-p" onclick="alert('E-posta değiştirme özelliği yakında!')">Değiştir</button></div>
 <div class="set-row"><div><div class="set-label">Turbo</div><div class="set-desc">${hasTurbo(me)?'✅ Aktif (${new Date(me.turboExp).toLocaleDateString(\'tr-TR\')})':'❌ Değil'}</div></div></div>
-<div class="set-row"><div><div class="set-label">Coins</div><div class="set-desc">${me.coins||0} coin</div></div></div></div></div>`;
-else if(t==='prof')el.innerHTML=`<div class="set-section on"><h2>Profil</h2><div class="set-card"><div class="field"><label>HAKKIMDA</label><textarea class="inp" rows="3" oninput="saveAbout(this.value)">${me.about||''}</textarea></div><div class="field"><label>DURUM</label><select class="inp" onchange="changeStatus(this.value)"><option value="online" ${me.status==='online'?'selected':''}>🟢 Çevrimiçi</option><option value="idle" ${me.status==='idle'?'selected':''}>🟡 Boşta</option><option value="dnd" ${me.status==='dnd'?'selected':''}>🔴 Rahatsız Etmeyin</option><option value="offline" ${me.status==='offline'?'selected':''}>⚫ Görünmez</option></select></div><div class="field"><label>PROFİL AFIŞI</label><div style="display:flex;gap:8px;flex-wrap:wrap">${GRADS.map((g,i)=>`<div class="grad-opt ${(me.banner||'')===g?'on':''}" style="background:${g}" onclick="saveBanner(${i})"></div>`).join('')}</div></div></div>
-<div class="set-card"><div class="set-label">Önizleme</div><div style="margin-top:8px;border-radius:8px;overflow:hidden;background:var(--bg-1);border:1px solid var(--bd)"><div style="height:60px;background:${me.banner?`url(${me.banner})`:'var(--bg-3)'};background-size:cover"></div><div style="padding:24px 12px 12px;position:relative"><div style="position:absolute;top:-24px;left:12px;border:4px solid var(--bg-1);border-radius:50%">${avHTML(me,48,18)}</div><div style="font-weight:700">${me.displayName}</div><div style="font-size:12px;color:var(--tx-m)">${me.about||'Henüz hakkında yazmadın.'}</div></div></div></div></div>`;
+<div class="set-row"><div><div class="set-label">Coins</div><div class="set-desc">${me.coins||0} coin</div></div></div></div></div>`;}
+else if(t==='prof'){el.innerHTML=`<div class="set-section on"><h2>Profil</h2><div class="set-card"><div class="field"><label>HAKKIMDA</label><textarea class="inp" rows="3" oninput="saveAbout(this.value)">${me.about||''}</textarea></div><div class="field"><label>DURUM</label><select class="inp" onchange="changeStatus(this.value)"><option value="online" ${me.status==='online'?'selected':''}>🟢 Çevrimiçi</option><option value="idle" ${me.status==='idle'?'selected':''}>🟡 Boşta</option><option value="dnd" ${me.status==='dnd'?'selected':''}>🔴 Rahatsız Etmeyin</option><option value="offline" ${me.status==='offline'?'selected':''}>⚫ Görünmez</option></select></div><div class="field"><label>PROFİL AFIŞI</label><div style="display:flex;gap:8px;flex-wrap:wrap">${GRADS.map((g,i)=>`<div class="grad-opt ${(me.banner||'')===g?'on':''}" style="background:${g}" onclick="saveBanner(${i})"></div>`).join('')}</div></div></div>
+<div class="set-card"><div class="set-label">Önizleme</div><div style="margin-top:8px;border-radius:8px;overflow:hidden;background:var(--bg-1);border:1px solid var(--bd)"><div style="height:60px;background:${me.banner?`url(${me.banner})`:'var(--bg-3)'};background-size:cover"></div><div style="padding:24px 12px 12px;position:relative"><div style="position:absolute;top:-24px;left:12px;border:4px solid var(--bg-1);border-radius:50%">${avHTML(me,48,18)}</div><div style="font-weight:700">${me.displayName}</div><div style="font-size:12px;color:var(--tx-m)">${me.about||'Henüz hakkında yazmadın.'}</div></div></div></div></div>`;}
+else if(t==='status'){el.innerHTML=`<div class="set-section on"><h2>Özel Durum</h2><div class="set-card"><div class="field"><label>DURUM MESAJI (Emoji + Metin)</label><input class="inp" id="customStatusInput" placeholder="🎮 Oyun oynuyor..." value="${me.customStatus||''}"></div><button class="btn btn-p" onclick="saveCustomStatus()">Kaydet</button></div>
+<div class="set-card"><div class="set-label">Önizleme</div><div style="font-size:13px;color:var(--tx-2);padding:8px;background:var(--bg-1);border-radius:var(--rs)">${me.customStatus||'Henüz durum ayarlanmamış.'}</div></div></div>`;}
 else if(t==='theme'){const theme=document.documentElement.getAttribute('data-theme')||'dark';const density=document.documentElement.getAttribute('data-density')||'normal';const fontSize=document.documentElement.getAttribute('data-font-size')||'medium';
 el.innerHTML=`<div class="set-section on"><h2>Görünüm</h2><div class="set-card"><div class="set-row"><div><div class="set-label">Tema</div><div class="set-desc">Aydınlık veya karanlık görünüm</div></div><div style="display:flex;gap:8px"><button class="btn ${theme==='dark'?'btn-p':'btn-s'}" onclick="setTheme('dark')">Karanlık</button><button class="btn ${theme==='light'?'btn-p':'btn-s'}" onclick="setTheme('light')">Aydınlık</button></div></div></div>
 <div class="set-card"><div class="set-row"><div><div class="set-label">Mesaj Düzeni</div><div class="set-desc">Cozy veya Compact</div></div><div style="display:flex;gap:8px"><button class="btn ${density==='normal'?'btn-p':'btn-s'}" onclick="setDensity('normal')">Cozy</button><button class="btn ${density==='compact'?'btn-p':'btn-s'}" onclick="setDensity('compact')">Compact</button></div></div></div>
@@ -1235,16 +1490,27 @@ else if(t==='advanced'){el.innerHTML=`<div class="set-section on"><h2>Gelişmiş
 else if(t==='activity'){el.innerHTML=`<div class="set-section on"><h2>Etkinlik</h2><div class="set-card"><div class="set-row"><div><div class="set-label">Etkinlik Gizliliği</div><div class="set-desc">Oynanan oyunu göster</div></div><div class="toggle on" onclick="toggleActivityPrivacy(this)"></div></div></div>
 <div class="set-card"><div class="set-label">Kayıtlı Oyunlar</div><div class="set-desc" style="margin-bottom:8px">Algılanan oyunlar</div>
 <div class="set-desc" style="color:var(--tx-m)">Henüz oyun algılanmadı</div>
-<button class="btn btn-p" style="margin-top:8px" onclick="alert('Manuel oyun ekleme yakında!')">+ Oyun Ekle</button></div></div>`}}
+<button class="btn btn-p" style="margin-top:8px" onclick="alert('Manuel oyun ekleme yakında!')">+ Oyun Ekle</button></div></div>`}
+else if(t==='blocked'){const blockedIds=me.blocked||[];const users=DB.g('users')||[];const blockedUsers=blockedIds.map(id=>users.find(u=>u.id===id)).filter(Boolean);
+el.innerHTML=`<div class="set-section on"><h2>Engellenen Kullanıcılar</h2>${blockedUsers.length?blockedUsers.map(u=>`<div class="set-card" style="display:flex;align-items:center;gap:12px">${avHTML(u,32,12)}<div style="flex:1">${u.displayName}</div><button class="btn btn-g" onclick="toggleBlockUser('${u.id}');renderSettingsContent('blocked')">Engeli Kaldır</button></div>`).join(''):'<div class="set-desc">Hiç kimseyi engellememişsin.</div>'}</div>`}
+}
 
 // === SETTINGS HELPERS ===
+function saveCustomStatus(){
+  const val=$('customStatusInput').value.trim();
+  const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);
+  if(!u)return;
+  u.customStatus=val||null;
+  DB.s('users',users);
+  me=u;
+  renderSettingsContent('status');
+  alert('Özel durum kaydedildi!');
+}
 function editDisplayName(){const n=prompt('Görünen ad:',me.displayName);if(!n)return;const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.displayName=n.trim();DB.s('users',users);me=u;updateUserArea();renderSettingsContent('acc')}
 function editUsername(){const n=prompt('Kullanıcı adı:',me.username);if(!n||n.length<2)return;const users=DB.g('users')||[];if(users.find(x=>x.username===n&&x.id!==me.id))return alert('Alınmış!');const u=users.find(x=>x.id===me.id);if(!u)return;u.username=n.trim().toLowerCase();DB.s('users',users);me=u;updateUserArea();renderSettingsContent('acc')}
 function saveAbout(v){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.about=v;DB.s('users',users);me=u}
 function changeStatus(s){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.status=s;DB.s('users',users);me=u;updateUserArea()}
 function saveBanner(i){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.banner=GRADS[i];DB.s('users',users);me=u;renderSettingsContent('prof')}
-function changeAvatar(){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');const S=128;c.width=S;c.height=S;const ctx=c.getContext('2d');const m=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);const data=c.toDataURL('image/jpeg',0.85);const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.avatar=data;DB.s('users',users);me=u;updateUserArea();renderSettingsContent('acc')};img.src=ev.target.result};r.readAsDataURL(f)};inp.click()}
-function removeAvatar(){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(!u)return;u.avatar=null;DB.s('users',users);me=u;updateUserArea();renderSettingsContent('acc')}
 
 function setTheme(t){if(t==='dark')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);DB.s('theme',t)}
 function setDensity(d){document.documentElement.setAttribute('data-density',d);DB.s('density',d)}
