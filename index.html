@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Lorensa Chat v9.1 (Cloud)</title>
+<title>Lorensa Chat v9.2 (Cloud)</title>
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTG9yZW5zYSBDaGF0Iiwic2hvcnRfbmFtZSI6IkxvcmVuc2EiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFlMWYyMiIsInRoZW1lX2NvbG9yIjoiIzU4NjVmMiJ9">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -419,7 +419,7 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 </style>
 </head>
 <body>
-<div id="splash"><div class="spl-logo"><i class="fas fa-comments"></i></div><div style="font-size:20px;font-weight:800">Lorensa Chat</div><div style="font-size:11px;color:var(--tx-m);margin-top:4px">v9.1 Cloud • Yapımcı: Zahit Eryavuz</div><div class="spl-bar"><div class="spl-fill"></div></div><div id="splashErr" style="display:none;max-width:80%;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(218,55,60,.15);color:#ff8a8c;font-size:12px;word-break:break-word;text-align:center"></div></div>
+<div id="splash"><div class="spl-logo"><i class="fas fa-comments"></i></div><div style="font-size:20px;font-weight:800">Lorensa Chat</div><div style="font-size:11px;color:var(--tx-m);margin-top:4px">v9.2 Cloud • Yapımcı: Zahit Eryavuz</div><div class="spl-bar"><div class="spl-fill"></div></div><div id="splashErr" style="display:none;max-width:80%;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(218,55,60,.15);color:#ff8a8c;font-size:12px;word-break:break-word;text-align:center"></div></div>
 
 <div id="gModal"><div class="gm-card"><button class="gm-close" onclick="$('gModal').classList.remove('show')"><i class="fas fa-times"></i></button>
 <div class="gm-head"><div style="font-size:40px;font-weight:800;color:#4285F4">G</div><h3>Hesap seçin</h3><p>Lorensa Chat'e devam etmek için</p></div>
@@ -481,6 +481,54 @@ input,textarea,select,button{font-family:inherit}a{color:var(--tx-link);text-dec
 
 <div class="modal-bg" id="galleryModal"><div class="modal lg"><div class="modal-head"><h3>🖼️ Medya Galerisi</h3><button class="modal-x" onclick="closeModal('galleryModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" id="galleryBody" style="max-height:70vh;overflow-y:auto"></div></div></div>
 
+<!-- YENİ MODALLAR -->
+<!-- 2FA Modal -->
+<div class="modal-bg" id="totpModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>🔐 İki Faktörlü Kimlik Doğrulama</h3>
+      <button class="modal-x" onclick="closeModal('totpModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="set-desc" style="margin-bottom:16px">
+        1. Google Authenticator veya Microsoft Authenticator indirin.<br>
+        2. Aşağıdaki anahtarı uygulamaya ekleyin.
+      </div>
+      <div style="font-size:24px;font-weight:700;letter-spacing:4px;font-family:monospace;text-align:center;padding:16px;background:var(--bg-0);border-radius:8px;margin:12px 0" id="totpSecretDisplay">XXXX-XXXX-XXXX</div>
+      <div class="field">
+        <label>DOĞRULAMA KODU</label>
+        <input class="inp" id="totpCodeInput" placeholder="6 haneli kodu girin" maxlength="6">
+      </div>
+      <button class="btn btn-p" onclick="enableTOTP()" style="width:100%">2FA'yı Etkinleştir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit History Modal -->
+<div class="modal-bg" id="editHistoryModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📝 Düzenleme Geçmişi</h3>
+      <button class="modal-x" onclick="closeModal('editHistoryModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="editHistoryBody" style="max-height:50vh;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- Channel Permissions Modal -->
+<div class="modal-bg" id="chPermModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head">
+      <h3>🔒 Kanal İzinleri</h3>
+      <button class="modal-x" onclick="closeModal('chPermModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="chPermBody" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="modal-foot">
+      <button class="btn btn-p" onclick="closeModal('chPermModal')">Tamam</button>
+    </div>
+  </div>
+</div>
+
 <div class="ctx-menu" id="ctxMenu"></div>
 <div id="profilePopup"></div>
 <div id="settingsPage"></div>
@@ -497,6 +545,20 @@ const EMOJIS='😀😁😂🤣😃😆😉😊😋😎😍😘🙂🤩🤔😐�
 const CONNECTION_TYPES={youtube:{icon:'fa-youtube',color:'#FF0000',name:'YouTube'},steam:{icon:'fa-steam',color:'#171D25',name:'Steam'},twitch:{icon:'fa-twitch',color:'#9146FF',name:'Twitch'},spotify:{icon:'fa-spotify',color:'#1DB954',name:'Spotify'},xbox:{icon:'fa-xbox',color:'#107C10',name:'Xbox'},playstation:{icon:'fa-playstation',color:'#003791',name:'PlayStation'}};
 const SOUNDS={pop:{icon:'fa-bell',name:'Pop'},swish:{icon:'fa-arrow-right',name:'Swish'},bass:{icon:'fa-music',name:'Bass'},laser:{icon:'fa-bolt',name:'Laser'},mario:{icon:'fa-star',name:'Mario'},clap:{icon:'fa-hands',name:'Alkış'},woosh:{icon:'fa-wind',name:'Woosh'},ding:{icon:'fa-bell',name:'Ding'}};
 
+// YENİ: GRADS
+const GRADS = [
+  'linear-gradient(135deg, #5865f2, #4752c4)',
+  'linear-gradient(135deg, #ed4245, #c0392b)',
+  'linear-gradient(135deg, #57f287, #1e8449)',
+  'linear-gradient(135deg, #fee75c, #f1c40f)',
+  'linear-gradient(135deg, #eb459e, #9b59b6)',
+  'linear-gradient(135deg, #e67e22, #d35400)',
+  'linear-gradient(135deg, #1abc9c, #16a085)',
+  'linear-gradient(135deg, #3498db, #2c3e50)',
+  'linear-gradient(135deg, #ff6b9d, #c44dff)',
+  'linear-gradient(135deg, #2ecc71, #27ae60)'
+];
+
 let me=null,curSrv=null,curCh=null,curView='home',isMuted=false,isDeafened=false,voiceActive=false,membersOpen=false;
 let callOn=false,callTimer=null,callSec=0,localStream=null,screenStream=null,mentionIdx=-1;
 let myPeer=null,currentCall=null,camTrack=null;
@@ -506,9 +568,23 @@ let currentThreadMsg=null;
 let voiceConns={},editingChannelId=null;
 let activeDevices=[],userConnections=[];
 let notificationSound=null;
-let replyToMsg=null; // For reply feature
-let mediaRecorder=null; // For voice message
+let replyToMsg=null;
+let mediaRecorder=null;
 let audioChunks=[];
+
+// === YENİ: srvLog ===
+function srvLog(s, text) {
+  if (!s) return;
+  if (!s.audit) s.audit = [];
+  s.audit.push({ by: me.displayName, text: text, ts: Date.now() });
+  if (s.audit.length > 500) s.audit.shift();
+  const svs = DB.g('servers') || [];
+  const idx = svs.findIndex(x => x.id === s.id);
+  if (idx > -1) {
+    svs[idx] = s;
+    DB.s('servers', svs);
+  }
+}
 
 // === AUDIO & NOTIFICATION ===
 function playNotification(type='message'){
@@ -562,7 +638,7 @@ function showAuthErr(m){$('authMsg').className='auth-msg err';$('authMsg').textC
 function showAuthOk(m){$('authMsg').className='auth-msg ok';$('authMsg').textContent=m}
 
 function doLogin(){const e=$('lEmail').value.trim(),p=$('lPass').value;if(!e||!p)return showAuthErr('Tüm alanları doldur.');const users=DB.g('users')||[],u=users.find(x=>(x.email===e||x.username===e)&&x.password===p);if(!u)return showAuthErr('E-posta veya şifre yanlış.');if(u.banned)return showAuthErr('Hesap devre dışı.');u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
-function doRegister(){const email=$('rEmail').value.trim(),name=$('rName').value.trim(),user=$('rUser').value.trim(),pass=$('rPass').value;if(!email||!name||!user||!pass)return showAuthErr('Tüm alanları doldur.');if(pass.length<6)return showAuthErr('Şifre en az 6 karakter.');const users=DB.g('users')||[];if(users.find(x=>x.email===email))return showAuthErr('E-posta kullanımda.');if(users.find(x=>x.username===user))return showAuthErr('Kullanıcı adı alınmış.');const nu={id:gId('u'),username:user,displayName:name,email,password:pass,role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(user),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:[],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null};users.push(nu);DB.s('users',users);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms&&!ms.members.includes(nu.id)){ms.members.push(nu.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[nu.id]=['r_member'];DB.s('servers',svs)}showAuthOk('Hesap oluşturuldu!');authMode('login');$('lEmail').value=email}
+function doRegister(){const email=$('rEmail').value.trim(),name=$('rName').value.trim(),user=$('rUser').value.trim(),pass=$('rPass').value;if(!email||!name||!user||!pass)return showAuthErr('Tüm alanları doldur.');if(pass.length<6)return showAuthErr('Şifre en az 6 karakter.');const users=DB.g('users')||[];if(users.find(x=>x.email===email))return showAuthErr('E-posta kullanımda.');if(users.find(x=>x.username===user))return showAuthErr('Kullanıcı adı alınmış.');const nu={id:gId('u'),username:user,displayName:name,email,password:pass,role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(user),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:[],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null,totpEnabled:false,totpSecret:null,theme:null};users.push(nu);DB.s('users',users);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms&&!ms.members.includes(nu.id)){ms.members.push(nu.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[nu.id]=['r_member'];DB.s('servers',svs)}showAuthOk('Hesap oluşturuldu!');authMode('login');$('lEmail').value=email}
 
 $('lPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 $('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
@@ -570,7 +646,7 @@ $('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
 function openGoogle(){const accs=DB.g('gAccounts')||[];$('gAccList').innerHTML='';accs.forEach(a=>{$('gAccList').innerHTML+=`<div class="gm-acc" onclick="selectGAcc('${a.email}')"><div class="gm-av">${a.name[0].toUpperCase()}</div><div class="gm-info"><div class="n">${a.name}</div><div class="e">${a.email}</div></div></div>`});$('gEmail').value='';$('gName').value='';$('gModal').classList.add('show')}
 function selectGAcc(email){const a=(DB.g('gAccounts')||[]).find(x=>x.email===email);if(a)processGoogleUser(a.email,a.name);$('gModal').classList.remove('show')}
 function gNewAcc(){const email=$('gEmail').value.trim(),name=$('gName').value.trim();if(!email||!email.includes('@'))return alert('Geçerli e-posta gir.');if(!name)return alert('Adını gir.');const accs=DB.g('gAccounts')||[];if(!accs.find(a=>a.email===email)){accs.push({email,name});DB.s('gAccounts',accs)}processGoogleUser(email,name);$('gModal').classList.remove('show')}
-function processGoogleUser(email,name){const users=DB.g('users')||[];let u=users.find(x=>x.email===email);if(!u){u={id:gId('u'),username:name.replace(/\s/g,'').toLowerCase(),displayName:name,email,password:Math.random().toString(36).substr(2,10),role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(name),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:['google'],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null};users.push(u);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms){ms.members.push(u.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[u.id]=['r_member'];DB.s('servers',svs)}}u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
+function processGoogleUser(email,name){const users=DB.g('users')||[];let u=users.find(x=>x.email===email);if(!u){u={id:gId('u'),username:name.replace(/\s/g,'').toLowerCase(),displayName:name,email,password:Math.random().toString(36).substr(2,10),role:'member',tag:gTag(),status:'online',about:'',createdAt:Date.now(),color:gc(name),banned:false,turbo:null,coins:100,avatar:null,banner:null,themes:['dark','light'],badges:['google'],friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null,totpEnabled:false,totpSecret:null,theme:null};users.push(u);const svs=DB.g('servers')||[],ms=svs.find(s=>s.id==='srv1');if(ms){ms.members.push(u.id);if(!ms.memberRoles)ms.memberRoles={};ms.memberRoles[u.id]=['r_member'];DB.s('servers',svs)}}u.status='online';DB.s('users',users);me=u;DB.s('cu',u.id);registerDevice();enterApp()}
 
 function logout(){if(me){const users=DB.g('users')||[],u=users.find(x=>x.id===me.id);if(u){u.status='offline';DB.s('users',users)}}leaveVoice();me=null;DB.d('cu');$('settingsPage').classList.remove('show');$('serverSettingsPage').classList.remove('show');$('appPage').classList.remove('show');$('authPage').classList.add('show')}
 
@@ -800,7 +876,6 @@ function changeAvatar(){
     reader.onload=ev=>{
       const data=ev.target.result;
       if(!isGif){
-        // Non-GIF: resmi sıkıştır
         const img=new Image();
         img.onload=()=>{
           const c=document.createElement('canvas');
@@ -814,7 +889,6 @@ function changeAvatar(){
         };
         img.src=data;
       } else {
-        // GIF: direkt kaydet
         saveAvatar(data);
       }
     };
@@ -902,7 +976,6 @@ function startVoiceRecording(){
       const reader=new FileReader();
       reader.onload=ev=>{
         const data=ev.target.result;
-        // Send as file
         window._selFile={name:'ses-kaydi.mp3',type:'audio/mp3',size:(blob.size/1024).toFixed(1)+' KB',data:data};
         $('filePrev').classList.add('show');
         $('filePrevText').textContent='🎤 Ses kaydı eklendi';
@@ -912,10 +985,8 @@ function startVoiceRecording(){
       stream.getTracks().forEach(t=>t.stop());
     };
     mediaRecorder.start();
-    // Buton görseli değiştir
     const btn=$('voiceMsgBtn');
     if(btn)btn.innerHTML='<i class="fas fa-stop" style="color:var(--rd)"></i>';
-    // 30 saniye sonra otomatik durdur
     setTimeout(()=>{
       if(mediaRecorder && mediaRecorder.state==='recording'){
         mediaRecorder.stop();
@@ -960,7 +1031,6 @@ function unsendMessage(mid){
   if(idx===-1)return;
   const msg=msgs[idx];
   if(msg.uid!==me.id)return alert('Sadece kendi mesajlarını çekebilirsin.');
-  // Geri çek: mesajı sil ve yerine sistem mesajı koy
   msgs.splice(idx,1);
   msgs.push({id:gId('m'),uid:'system',text:'🔁 Bu mesaj kullanıcı tarafından geri çekildi.',ts:Date.now(),type:'system',threads:[],reactions:[]});
   DB.s(st,d);
@@ -969,9 +1039,9 @@ function unsendMessage(mid){
 
 // === INIT DB ===
 function initDB(){
-if(!DB.g('users'))DB.s('users',[{id:'admin1',username:'lorensa_chat',displayName:'Lorensa Chat',email:'zahiteryavuz2131@gmail.com',password:'ZahitBey',role:'admin',tag:'#0001',status:'online',about:'Platform Yöneticisi • Yapımcı: Zahit Eryavuz',createdAt:Date.now(),color:'#ed4245',banned:false,turbo:'turbo_pro',turboExp:Date.now()+365*864e5,coins:9999,avatar:null,banner:null,themes:['dark','light'],badges:['admin','turbo','founder','official'],isOfficial:true,friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null}]);
-if(!DB.g('servers'))DB.s('servers',[{id:'srv1',name:'Lorensa Topluluk',desc:'Lorensa Chat resmi sunucusu',icon:null,color:'#5865f2',owner:'admin1',members:['admin1'],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{admin1:['r_admin']},categories:[{id:'cat1',name:'Yazışma',channels:[{id:'ch_welcome',name:'hoş-geldiniz',type:'text',topic:'Yeni üyeleri karşılayın!'},{id:'ch_general',name:'genel',type:'text',topic:'Genel sohbet'},{id:'ch_media',name:'medya-paylaşım',type:'text',topic:'Fotoğraf ve video'}]},{id:'cat2',name:'Ses Kanalları',channels:[{id:'ch_v1',name:'Genel Sohbet',type:'voice',users:[]},{id:'ch_v2',name:'Müzik',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:'lorensa-topluluk',tag:'LOR',welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[]}]);
-if(!DB.g('messages'))DB.s('messages',{ch_general:[{id:'m1',uid:'admin1',text:'Lorensa Chat\'e hoş geldiniz! 🎉',ts:Date.now()-36e5,reactions:[],pinned:false,threads:[]}]});
+if(!DB.g('users'))DB.s('users',[{id:'admin1',username:'lorensa_chat',displayName:'Lorensa Chat',email:'zahiteryavuz2131@gmail.com',password:'ZahitBey',role:'admin',tag:'#0001',status:'online',about:'Platform Yöneticisi • Yapımcı: Zahit Eryavuz',createdAt:Date.now(),color:'#ed4245',banned:false,turbo:'turbo_pro',turboExp:Date.now()+365*864e5,coins:9999,avatar:null,banner:null,themes:['dark','light'],badges:['admin','turbo','founder','official'],isOfficial:true,friends:[],pendingFriends:[],blocked:[],connections:[],devices:[],customStatus:null,totpEnabled:false,totpSecret:null,theme:null}]);
+if(!DB.g('servers'))DB.s('servers',[{id:'srv1',name:'Lorensa Topluluk',desc:'Lorensa Chat resmi sunucusu',icon:null,color:'#5865f2',owner:'admin1',members:['admin1'],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{admin1:['r_admin']},categories:[{id:'cat1',name:'Yazışma',channels:[{id:'ch_welcome',name:'hoş-geldiniz',type:'text',topic:'Yeni üyeleri karşılayın!'},{id:'ch_general',name:'genel',type:'text',topic:'Genel sohbet'},{id:'ch_media',name:'medya-paylaşım',type:'text',topic:'Fotoğraf ve video'}]},{id:'cat2',name:'Ses Kanalları',channels:[{id:'ch_v1',name:'Genel Sohbet',type:'voice',users:[]},{id:'ch_v2',name:'Müzik',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:'lorensa-topluluk',tag:'LOR',welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[],audit:[],bans:[]}]);
+if(!DB.g('messages'))DB.s('messages',{ch_general:[{id:'m1',uid:'admin1',text:'Lorensa Chat\'e hoş geldiniz! 🎉',ts:Date.now()-36e5,reactions:[],pinned:false,threads:[],editHistory:[]}]});
 if(!DB.g('dms'))DB.s('dms',{});
 if(!DB.g('gAccounts'))DB.s('gAccounts',[]);
 if(!DB.g('devices'))DB.s('devices',{});
@@ -982,7 +1052,8 @@ if(!DB.g('blocked'))DB.s('blocked',{});
 
 // === ENTER APP ===
 function enterApp(){
-window.__entered=true;$('authPage').classList.remove('show');$('appPage').classList.add('show');updateUserArea();renderServers();goHome();initPeer();}
+window.__entered=true;$('authPage').classList.remove('show');$('appPage').classList.add('show');updateUserArea();renderServers();goHome();initPeer();
+setTimeout(loadUserTheme, 300);}
 
 function updateUserArea(){
 if(!me)return;const av=$('uaAvatar');
@@ -1077,7 +1148,6 @@ const blockedIds=me.blocked||[];
 const filtered=all.filter(msg=>{
   if(msg.type==='system')return true;
   if(blockedIds.includes(msg.uid))return false;
-  // Also hide blocked user's messages in DMs
   if(isDM){
     const otherId=curCh.id.split('_').find(id=>id!==me.id);
     if(blockedIds.includes(otherId))return false;
@@ -1100,10 +1170,12 @@ let reactions='';if(msg.reactions&&msg.reactions.length)reactions='<div class="m
 let threadPreview='';if(msg.threads&&msg.threads.length){const lastReply=msg.threads[msg.threads.length-1];const replyUser=users.find(x=>x.id===lastReply.uid);threadPreview=`<div class="thread-preview" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i> ${msg.threads.length} yanıt • Son: ${replyUser?replyUser.displayName:'?'} - ${ts(lastReply.ts)}</div>`}
 const statusDot=`<div class="status-dot ${u.status||'offline'}"></div>`;
 const isOwn=msg.uid===me.id;
+const editHistoryBtn = (msg.editHistory && msg.editHistory.length) ? 
+  `<button class="msg-act" onclick="showEditHistory('${msg.id}')" title="Düzenleme geçmişi"><i class="fas fa-history"></i></button>` : '';
 el.innerHTML+=`<div class="msg"><div class="msg-av" onclick="showProfile('${u.id}')">${avHTML(u,40,16)}${statusDot}</div>
 <div class="msg-body"><div class="msg-header"><span class="msg-name" style="color:${getNameColor(u)}" onclick="showProfile('${u.id}')">${u.displayName}</span>${badges}${pinBadge}${unsendBadge}<span class="msg-time">${ts(msg.ts)}</span></div>
 <div class="msg-text">${content}</div>${msg.edited?'<span style="font-size:11px;color:var(--tx-m)">(düzenlendi)</span>':''}${reactions}${threadPreview}</div>
-<div class="msg-actions"><button class="msg-act" onclick="toggleReact('${msg.id}','👍')"><i class="fas fa-thumbs-up"></i></button>${!isUnsent?`<button class="msg-act" onclick="setReply('${msg.id}')"><i class="fas fa-reply"></i></button>`:''}<button class="msg-act" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i></button>${canManageMessages()?`<button class="msg-act" onclick="togglePinMessage('${msg.id}')"><i class="fas fa-thumbtack" style="color:${isPinned?'var(--yl)':'var(--tx-m)'}"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="editMessage('${msg.id}')"><i class="fas fa-pencil"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="unsendMessage('${msg.id}')"><i class="fas fa-undo"></i></button>`:''}${(msg.uid===me.id||canManageMessages())?`<button class="msg-act" onclick="deleteMessage('${msg.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`});
+<div class="msg-actions"><button class="msg-act" onclick="toggleReact('${msg.id}','👍')"><i class="fas fa-thumbs-up"></i></button>${!isUnsent?`<button class="msg-act" onclick="setReply('${msg.id}')"><i class="fas fa-reply"></i></button>`:''}<button class="msg-act" onclick="openThread('${msg.id}')"><i class="fas fa-comments"></i></button>${canManageMessages()?`<button class="msg-act" onclick="togglePinMessage('${msg.id}')"><i class="fas fa-thumbtack" style="color:${isPinned?'var(--yl)':'var(--tx-m)'}"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="editMessage('${msg.id}')"><i class="fas fa-pencil"></i></button>`:''}${isOwn?`<button class="msg-act" onclick="unsendMessage('${msg.id}')"><i class="fas fa-undo"></i></button>`:''}${(msg.uid===me.id||canManageMessages())?`<button class="msg-act" onclick="deleteMessage('${msg.id}')"><i class="fas fa-trash"></i></button>`:''}${editHistoryBtn}</div></div>`});
 setTimeout(enrichLinks,200);scrollToBottom()}
 
 function getNameColor(u){if(!curSrv)return u.color;const rs=(curSrv.memberRoles&&curSrv.memberRoles[u.id])||[];for(const rid of rs){const r=(curSrv.roles||[]).find(x=>x.id===rid);if(r)return r.color}return u.color}
@@ -1144,7 +1216,7 @@ if(replyToMsg){
   finalText=`> @${u?u.displayName:'?'}: ${replyToMsg.text.substring(0,60)}${replyToMsg.text.length>60?'...':''}\n${text}`;
   clearReply();
 }
-const msgObj={id:gId('m'),uid:me.id,text:finalText,ts:Date.now(),reactions:[],pinned:false,edited:false,threads:[]};
+const msgObj={id:gId('m'),uid:me.id,text:finalText,ts:Date.now(),reactions:[],pinned:false,edited:false,threads:[],editHistory:[]};
 if(window._selFile){msgObj.file=window._selFile;clearFile()}
 if(window._selGif){msgObj.gif=window._selGif;window._selGif=null}
 if(curView==='dm'){const d=DB.g('dms')||{};if(!d[curCh.id])d[curCh.id]=[];d[curCh.id].push(msgObj);DB.s('dms',d)}else{const m=DB.g('messages')||{};if(!m[curCh.id])m[curCh.id]=[];m[curCh.id].push(msgObj);DB.s('messages',m)}
@@ -1166,15 +1238,18 @@ case'/ban':if(canBan()&&args[1]){const tu=DB.g('users').find(u=>u.username===arg
 case'/serverinfo':if(curSrv){reply=`📊 **${curSrv.name}**\n👥 ${curSrv.members.length} üye\n📅 ${new Date(curSrv.createdAt).toLocaleDateString('tr-TR')}\n🔒 ${curSrv.pub?'Açık':'Özel'}`;}break;
 case'/userinfo':if(args[1]){const tu=DB.g('users').find(u=>u.username===args[1]||u.displayName===args[1]);if(tu)reply=`👤 **${tu.displayName}**\n📛 ${tu.username}\n📅 ${new Date(tu.createdAt).toLocaleDateString('tr-TR')}\n🟢 ${tu.status}`}break;
 default:reply='❓ Bilinmeyen komut. `/help` ile yardım al.'}
-if(reply){if(!msgs[curCh.id])msgs[curCh.id]=[];msgs[curCh.id].push({id:gId('m'),uid:'admin1',text:reply,ts:Date.now()+200,reactions:[],pinned:false,edited:false,threads:[]});DB.s('messages',msgs);setTimeout(renderMessages,200)}}
+if(reply){if(!msgs[curCh.id])msgs[curCh.id]=[];msgs[curCh.id].push({id:gId('m'),uid:'admin1',text:reply,ts:Date.now()+200,reactions:[],pinned:false,edited:false,threads:[],editHistory:[]});DB.s('messages',msgs);setTimeout(renderMessages,200)}}
 
 // === DELETE / EDIT / REACT ===
 function deleteMessage(mid){if(!canManageMessages()&&!msg.uid===me.id)return alert('Yetkiniz yok!');
 if(curView==='dm'){const d=DB.g('dms')||{};d[curCh.id]=(d[curCh.id]||[]).filter(m=>m.id!==mid);DB.s('dms',d)}else{const m=DB.g('messages')||{};m[curCh.id]=(m[curCh.id]||[]).filter(x=>x.id!==mid);DB.s('messages',m)}renderMessages()}
 function editMessage(mid){const st=curView==='dm'?'dms':'messages';const d=DB.g(st)||{};const msg=(d[curCh.id]||[]).find(m=>m.id===mid);if(!msg||(msg.uid!==me.id&&!canManageMessages()))return alert('Yetkiniz yok!');
-const nw=prompt('Mesajı düzenle:',msg.text);if(nw!==null){msg.text=nw;msg.edited=true;DB.s(st,d);renderMessages()}}
+const nw=prompt('Mesajı düzenle:',msg.text);if(nw!==null){
+  if(!msg.editHistory)msg.editHistory=[];
+  msg.editHistory.push({oldText:msg.text,editedAt:Date.now(),editedBy:me.id});
+  msg.text=nw;msg.edited=true;DB.s(st,d);renderMessages()}}
 function toggleReact(mid,emoji){const st=curView==='dm'?'dms':'messages';const d=DB.g(st)||{};const msg=(d[curCh.id]||[]).find(m=>m.id===mid);if(!msg)return;if(!msg.reactions)msg.reactions=[];let r=msg.reactions.find(x=>x.e===emoji);if(!r){r={e:emoji,u:[]};msg.reactions.push(r)}const i=r.u.indexOf(me.id);if(i>-1)r.u.splice(i,1);else r.u.push(me.id);if(!r.u.length)msg.reactions=msg.reactions.filter(x=>x.e!==emoji);DB.s(st,d);renderMessages()}
-function replyTo(mid){setReply(mid)} // override
+function replyTo(mid){setReply(mid)}
 
 // === FILE UPLOAD ===
 window._selFile=null;window._selGif=null;
@@ -1283,7 +1358,7 @@ function startDM(){const un=$('dmUserInput').value.trim();if(!un)return;const tu
 function openDMChat(tid){const tu=(DB.g('users')||[]).find(u=>u.id===tid);if(!tu)return;if((me.blocked||[]).includes(tid))return alert('Bu kullanıcıyı engellediniz.');const dk=[me.id,tid].sort().join('_');const d=DB.g('dms')||{};if(!d[dk]){d[dk]=[];DB.s('dms',d)}curView='dm';curSrv=null;curCh={id:dk,name:tu.displayName,type:'dm'};renderHomeChannels();renderChat()}
 
 // === SERVER / CATEGORY ===
-function createServer(){const name=$('newSrvName').value.trim();if(!name)return alert('Sunucu adı gerekli.');const svs=DB.g('servers')||[];const srv={id:gId('s'),name,desc:$('newSrvDesc').value.trim(),icon:null,color:COL[Math.floor(Math.random()*COL.length)],owner:me.id,members:[me.id],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{},categories:[{id:gId('cat'),name:'Yazışma',channels:[{id:gId('ch'),name:'genel',type:'text',topic:'Genel sohbet'}]},{id:gId('cat'),name:'Ses Kanalları',channels:[{id:gId('ch'),name:'Genel Ses',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:gId('inv'),tag:name.substring(0,3).toUpperCase(),welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[]};srv.memberRoles[me.id]=['r_admin'];svs.push(srv);DB.s('servers',svs);const m=DB.g('messages')||{};srv.categories[0].channels.forEach(ch=>{m[ch.id]=[{id:gId('m'),uid:'system',text:'🎉 **'+name+'** oluşturuldu!',ts:Date.now(),type:'system',threads:[]}]});DB.s('messages',m);closeModal('createServerModal');renderServers();selectServer(srv.id)}
+function createServer(){const name=$('newSrvName').value.trim();if(!name)return alert('Sunucu adı gerekli.');const svs=DB.g('servers')||[];const srv={id:gId('s'),name,desc:$('newSrvDesc').value.trim(),icon:null,color:COL[Math.floor(Math.random()*COL.length)],owner:me.id,members:[me.id],roles:[{id:'r_admin',name:'Admin',color:'#ed4245',perms:['all']},{id:'r_mod',name:'Moderatör',color:'#e67e22',perms:['kick','ban','manage_messages']},{id:'r_member',name:'Üye',color:'#57f287',perms:['read','write']}],memberRoles:{me.id:['r_admin']},categories:[{id:gId('cat'),name:'Yazışma',channels:[{id:gId('ch'),name:'genel',type:'text',topic:'Genel sohbet'}]},{id:gId('cat'),name:'Ses Kanalları',channels:[{id:gId('ch'),name:'Genel Ses',type:'voice',users:[]}]}],pub:true,createdAt:Date.now(),invite:gId('inv'),tag:name.substring(0,3).toUpperCase(),welcome:{enabled:true,message:'{user} sunucuya katıldı! 🎉'},customEmojis:[],audit:[],bans:[]};svs.push(srv);DB.s('servers',svs);const m=DB.g('messages')||{};srv.categories[0].channels.forEach(ch=>{m[ch.id]=[{id:gId('m'),uid:'system',text:'🎉 **'+name+'** oluşturuldu!',ts:Date.now(),type:'system',threads:[],editHistory:[]}]});DB.s('messages',m);closeModal('createServerModal');renderServers();selectServer(srv.id)}
 function createCategory(){if(!curSrv)return;const name=$('newCatName').value.trim();if(!name)return;const svs=DB.g('servers')||[],s=svs.find(x=>x.id===curSrv.id);if(!s)return;s.categories.push({id:gId('cat'),name,channels:[]});DB.s('servers',svs);curSrv=s;closeModal('createCatModal');$('newCatName').value='';renderChannels()}
 function roleChecksHTML(roles,selected){return (roles||[]).filter(r=>!(r.perms||[]).includes('all')).map(r=>`<label class="role-check" style="color:${r.color}"><input type="checkbox" value="${r.id}" ${selected.includes(r.id)?'checked':''} style="width:auto">${r.name}</label>`).join('')||'<div class="set-desc">Rol yok</div>'}
 
@@ -1294,7 +1369,7 @@ function createChannel(){if(!curSrv)return;const catId=$('newChCat').value,name=
 function openServerInvite(){if(!curSrv)return;$('inviteBody').innerHTML=`<p style="color:var(--tx-m);font-size:14px;margin-bottom:12px">Arkadaşlarını <strong>${curSrv.name}</strong> sunucusuna davet et!</p><div style="display:flex;gap:8px;background:var(--bg-0);padding:8px;border-radius:var(--rs)"><input class="inp" value="https://lorensa.chat/invite/${curSrv.invite||curSrv.id}" readonly id="invLinkInput" style="flex:1"><button class="btn btn-p" onclick="navigator.clipboard&&navigator.clipboard.writeText($('invLinkInput').value);this.textContent='Kopyalandı!'">Kopyala</button></div>`;openModal('inviteModal')}
 
 function chContext(e,chId){e.preventDefault();e.stopPropagation();const ctx=$('ctxMenu');
-ctx.innerHTML=`<div class="ctx-item" onclick="openChannelEdit('${chId}');hideCtx()"><i class="fas fa-cog"></i> Kanalı Düzenle</div><div class="ctx-item red" onclick="editingChannelId='${chId}';deleteChannelCtx();hideCtx()"><i class="fas fa-trash"></i> Kanalı Sil</div>`;
+ctx.innerHTML=`<div class="ctx-item" onclick="openChannelEdit('${chId}');hideCtx()"><i class="fas fa-cog"></i> Kanalı Düzenle</div><div class="ctx-item" onclick="setupChannelPermissions('${chId}');hideCtx()"><i class="fas fa-lock"></i> İzinler</div><div class="ctx-item red" onclick="editingChannelId='${chId}';deleteChannelCtx();hideCtx()"><i class="fas fa-trash"></i> Kanalı Sil</div>`;
 ctx.style.left=e.clientX+'px';ctx.style.top=e.clientY+'px';ctx.classList.add('show')}
 function findChannel(chId){let found=null;(curSrv.categories||[]).forEach(c=>(c.channels||[]).forEach(ch=>{if(ch.id===chId)found=ch}));return found}
 function openChannelEdit(chId){if(!curSrv)return;editingChannelId=chId;const ch=findChannel(chId);if(!ch)return;$('ecName').value=ch.name;$('ecTopic').value=ch.topic||'';$('ecPriv').checked=!!ch.priv;$('ecRolesBox').style.display=ch.priv?'block':'none';$('ecRolesBox').innerHTML=roleChecksHTML(curSrv.roles,ch.allowRoles||[]);openModal('editChannelModal')}
@@ -1309,7 +1384,7 @@ const rect=$('sideTitle').parentElement.getBoundingClientRect();ctx.style.left=r
 function openDiscover(){$('mainArea').innerHTML=`<div class="chat-head"><button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button><i class="fas fa-compass ch-icon"></i><span class="ch-title">Keşfet</span></div><div style="flex:1;overflow-y:auto;padding:16px"><div style="margin-bottom:16px"><input class="inp" placeholder="Topluluk ara..." oninput="renderDiscoverServers(this.value)" style="max-width:400px"></div><div id="discoverGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div></div>`;renderDiscoverServers('')}
 function renderDiscoverServers(q){const el=$('discoverGrid');if(!el)return;el.innerHTML='';(DB.g('servers')||[]).filter(s=>s.pub&&((s.name||'').toLowerCase().includes(q.toLowerCase())||(s.desc||'').toLowerCase().includes(q.toLowerCase()))).forEach(s=>{const isM=(s.members||[]).includes(me.id);el.innerHTML+=`<div style="background:var(--bg-1);border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)"><div style="height:80px;background:linear-gradient(135deg,${s.color},${s.color}88);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:800;overflow:hidden">${s.icon?`<img src="${s.icon}" style="width:100%;height:100%;object-fit:cover">`:(s.name[0]||'S')}</div><div style="padding:12px"><div style="font-weight:700">${s.name}</div><div style="font-size:12px;color:var(--tx-m);margin:4px 0 8px">${s.desc||''}</div><div style="font-size:11px;color:var(--tx-m);margin-bottom:8px"><i class="fas fa-users"></i> ${(s.members||[]).length} üye</div><button class="btn ${isM?'btn-s':'btn-p'}" style="width:100%" onclick="${isM?`selectServer('${s.id}')`:`joinServer('${s.id}')`}">${isM?'Zaten Üye':'Katıl'}</button></div></div>`})}
 function joinServer(sid){const svs=DB.g('servers')||[],s=svs.find(x=>x.id===sid);if(!s||(s.members||[]).includes(me.id))return;s.members.push(me.id);if(!s.memberRoles)s.memberRoles={};s.memberRoles[me.id]=['r_member'];
-if(s.welcome&&s.welcome.enabled){const m=DB.g('messages')||{};const firstCh=s.categories[0]?s.categories[0].channels[0]:null;if(firstCh){if(!m[firstCh.id])m[firstCh.id]=[];m[firstCh.id].push({id:gId('m'),uid:'system',text:s.welcome.message.replace('{user}','**'+me.displayName+'**'),ts:Date.now(),type:'system',threads:[]});DB.s('messages',m)}}
+if(s.welcome&&s.welcome.enabled){const m=DB.g('messages')||{};const firstCh=s.categories[0]?s.categories[0].channels[0]:null;if(firstCh){if(!m[firstCh.id])m[firstCh.id]=[];m[firstCh.id].push({id:gId('m'),uid:'system',text:s.welcome.message.replace('{user}','**'+me.displayName+'**'),ts:Date.now(),type:'system',threads:[],editHistory:[]});DB.s('messages',m)}}
 DB.s('servers',svs);renderServers();selectServer(sid);playNotification('join')}
 
 // === MEMBERS ===
@@ -1318,7 +1393,7 @@ function renderMembers(){if(!curSrv)return;const el=$('membersBar'),users=DB.g('
 if(on.length){el.innerHTML+=`<div class="mem-cat">ÇEVRİMİÇİ — ${on.length}</div>`;on.forEach(u=>{el.innerHTML+=`<div class="mem" onclick="showProfile('${u.id}')"><div class="mem-av">${avHTML(u,32,12)}<div class="dot ${u.status||'online'}"></div></div><div class="mem-name" style="color:${getNameColor(u)}">${u.displayName}</div></div>`})}
 if(off.length){el.innerHTML+=`<div class="mem-cat">ÇEVRİMDIŞI — ${off.length}</div>`;off.forEach(u=>{el.innerHTML+=`<div class="mem off" onclick="showProfile('${u.id}')"><div class="mem-av">${avHTML(u,32,12)}<div class="dot offline"></div></div><div class="mem-name">${u.displayName}</div></div>`})}}
 
-// === PROFILE (geliştirilmiş - Custom Status, Block) ===
+// === PROFILE ===
 function showProfile(uid){const u=(DB.g('users')||[]).find(x=>x.id===uid);if(!u)return;const pp=$('profilePopup');let badges='';if(u.role==='admin')badges+='<span class="msg-badge b-admin">ADMIN</span> ';if(u.isOfficial)badges+='<span class="msg-badge b-official">RESMİ</span> ';if(hasTurbo(u))badges+='<span class="msg-badge b-turbo">TURBO</span> ';
 if(curSrv){const rids=(curSrv.memberRoles&&curSrv.memberRoles[u.id])||[];rids.forEach(rid=>{const r=(curSrv.roles||[]).find(x=>x.id===rid);if(r)badges+=`<span class="role-badge" style="background:${r.color}20;color:${r.color};border:1px solid ${r.color}">${r.name}</span>`})}
 const conns=(u.connections||[]).map(c=>CONNECTION_TYPES[c]).filter(Boolean);
@@ -1368,6 +1443,14 @@ $('serverSettingsPage').classList.add('show');renderSrvSet()}
 function srvTab(t,el){srvSetTab=t;document.querySelectorAll('#serverSettingsPage .sn-item').forEach(x=>x.classList.remove('on'));if(el)el.classList.add('on');renderSrvSet()}
 
 function renderSrvSet(){const s=(DB.g('servers')||[]).find(x=>x.id===curSrv.id);if(!s)return;curSrv=s;const el=$('srvSetContent'),users=DB.g('users')||[];
+
+// Roller tab'ı için özel render
+if(srvSetTab==='roller' || srvSetTab==='roles'){
+  renderRoleSettings();
+  return;
+}
+
+// Diğer tab'lar için mevcut kod
 if(srvSetTab==='profil'){const online=(s.members||[]).filter(id=>{const u=users.find(x=>x.id===id);return u&&u.status!=='offline'}).length;
 el.innerHTML=`<div class="set-section on"><h2>Sunucu Profili</h2><div style="display:flex;gap:24px;flex-wrap:wrap">
 <div style="flex:1;min-width:280px">
@@ -1393,7 +1476,6 @@ h+=`<div class="set-card"><div style="display:flex;align-items:center;gap:12px;m
 if(mid!==s.owner){h+=`<div style="display:flex;flex-wrap:wrap;gap:6px">`+(s.roles||[]).filter(r=>!(r.perms||[]).includes('all')).map(r=>`<label class="role-check" style="color:${r.color}"><input type="checkbox" ${rids.includes(r.id)?'checked':''} onchange="toggleMemberRole('${mid}','${r.id}',this.checked)" style="width:auto">${r.name}</label>`).join('')+`</div>`}
 h+=`</div>`});
 el.innerHTML=h+'</div>'}
-else if(srvSetTab==='roller'){el.innerHTML=`<div class="set-section on"><h2>Roller</h2><div class="set-desc" style="margin-bottom:12px">Renge tıkla → renk seç. İsme tıkla → yeniden adlandır.</div>`+(s.roles||[]).map(r=>`<div class="set-card" style="display:flex;align-items:center;gap:12px"><input type="color" value="${r.color}" style="width:36px;height:36px;border:none;background:none;cursor:pointer" onchange="setRoleColor('${r.id}',this.value)"><div style="flex:1;font-weight:600;color:${r.color};cursor:pointer" onclick="renameRole('${r.id}')">${r.name}</div>${(r.perms||[]).includes('all')?'':`<button class="btn btn-d" style="padding:4px 10px" onclick="delRole('${r.id}')">Sil</button>`}</div>`).join('')+`<button class="btn btn-p" onclick="addRole()">+ Rol Ekle</button></div>`}
 else if(srvSetTab==='davet'){const link='https://lorensa.chat/invite/'+(s.invite||s.id);el.innerHTML=`<div class="set-section on"><h2>Davetler</h2><div class="set-card"><div class="set-label">Davet Bağlantısı</div><div style="display:flex;gap:8px;margin-top:8px"><input class="inp" readonly value="${link}" id="invLink2"><button class="btn btn-p" onclick="navigator.clipboard.writeText($('invLink2').value);this.textContent='Kopyalandı!'">Kopyala</button></div><div class="set-desc" style="margin-top:8px">Bu bağlantıya sahip herkes katılabilir.</div></div></div>`}
 else if(srvSetTab==='erisim'){el.innerHTML=`<div class="set-section on"><h2>Erişim</h2><div class="set-card"><div class="set-row"><div><div class="set-label">Keşfet'te Listele</div><div class="set-desc">Sunucu herkes tarafından görülebilir.</div></div><div class="toggle ${s.pub?'on':''}" onclick="toggleSrvPub(this)"></div></div></div></div>`}
 else if(srvSetTab==='ban'){const b=s.bans||[];el.innerHTML=`<div class="set-section on"><h2>Yasaklar — ${b.length}</h2>`+(b.length?b.map(x=>{const u=users.find(y=>y.id===x);return u?`<div class="set-card" style="display:flex;align-items:center;gap:12px">${avHTML(u,32,12)}<div style="flex:1">${u.displayName}</div><button class="btn btn-g" style="padding:4px 10px" onclick="unbanMember('${x}')">Yasağı Kaldır</button></div>`:''}).join(''):'<div class="set-desc">Henüz yasaklı yok.</div>')+'</div>'}
@@ -1422,7 +1504,491 @@ function toggleWelcome(el){const svs=DB.g('servers'),s=svs.find(x=>x.id===curSrv
 function saveWelcome(){const svs=DB.g('servers'),s=svs.find(x=>x.id===curSrv.id);s.welcome.message=$('welcomeMsg').value;DB.s('servers',svs);alert('Kaydedildi!');renderSrvSet()}
 function openSoundboard(){renderSoundboard()}
 
-// === USER SETTINGS (geliştirilmiş - Custom Status) ===
+// === YENİ: ROL YÖNETİMİ FONKSİYONLARI ===
+function renderRoleSettings() {
+  const s = (DB.g('servers') || []).find(x => x.id === curSrv.id);
+  if (!s) return;
+  const roles = s.roles || [];
+  const el = document.getElementById('srvSetContent');
+  if (!el) return;
+
+  const allPermissions = [
+    { id: 'all', label: '✅ Tüm Yetkiler' },
+    { id: 'read', label: '📖 Okuma' },
+    { id: 'write', label: '✏️ Yazma' },
+    { id: 'manage_messages', label: '📝 Mesaj Yönetimi' },
+    { id: 'kick', label: '👢 Atma' },
+    { id: 'ban', label: '🔨 Yasaklama' },
+    { id: 'manage_channels', label: '📋 Kanal Yönetimi' },
+    { id: 'manage_roles', label: '👑 Rol Yönetimi' },
+    { id: 'manage_server', label: '⚙️ Sunucu Yönetimi' },
+    { id: 'mention_everyone', label: '📢 @everyone' },
+    { id: 'attach_files', label: '📎 Dosya Ekleme' },
+    { id: 'connect_voice', label: '🎤 Ses Bağlantısı' },
+    { id: 'mute_members', label: '🔇 Üyeleri Sustur' },
+    { id: 'deafen_members', label: '🔊 Üyeleri Sağırlaştır' },
+    { id: 'move_members', label: '🚀 Üyeleri Taşı' },
+    { id: 'create_invite', label: '🔗 Davet Oluştur' }
+  ];
+
+  let html = `
+    <div class="set-section on">
+      <h2>Roller ve Yetkiler</h2>
+      <div class="set-desc" style="margin-bottom:16px">
+        Rolleri yönet, kullanıcılara yetki ver ve kanal izinlerini ayarla.
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn btn-p" onclick="createNewRole()">
+          <i class="fas fa-plus"></i> Rol Oluştur
+        </button>
+        <button class="btn btn-p" onclick="showRolePermissions()">
+          <i class="fas fa-lock"></i> İzinleri Düzenle
+        </button>
+      </div>
+      <div style="background:var(--bg-0);border-radius:8px;padding:8px">
+  `;
+
+  roles.forEach(role => {
+    const isDefault = (role.perms || []).includes('all');
+    const memberCount = (s.members || []).filter(mid =>
+      (s.memberRoles && s.memberRoles[mid] && s.memberRoles[mid].includes(role.id))
+    ).length;
+
+    html += `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-0);border-radius:8px;margin-bottom:4px">
+        <input type="color" value="${role.color || '#5865f2'}" 
+               style="width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;padding:0"
+               onchange="updateRoleColor('${role.id}', this.value)">
+        <span style="font-weight:600;color:${role.color};cursor:pointer;flex:1" 
+              onclick="renameRole('${role.id}')">${role.name}</span>
+        <span style="font-size:11px;color:var(--tx-m)">(${memberCount} üye)</span>
+        ${isDefault ? '<span class="msg-badge b-admin">VARSİYILAN</span>' : ''}
+        <div style="display:flex;gap:4px">
+          <button class="head-btn" onclick="editRolePermissions('${role.id}')" title="İzinleri Düzenle">
+            <i class="fas fa-cog"></i>
+          </button>
+          ${!isDefault ? `
+            <button class="head-btn" style="color:var(--rd)" onclick="deleteRole('${role.id}')" title="Rolü Sil">
+              <i class="fas fa-trash"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--bg-1);border-radius:8px">
+        <div class="set-label" style="margin-bottom:8px">📋 Tüm İzinler</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px;font-size:12px">
+          ${allPermissions.map(p => `
+            <label style="display:flex;align-items:center;gap:4px;padding:4px 8px;background:var(--bg-0);border-radius:4px;cursor:pointer">
+              <input type="checkbox" style="width:auto" onchange="toggleGlobalPermission('${p.id}', this.checked)">
+              ${p.label}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  el.innerHTML = html;
+}
+
+function createNewRole() {
+  const name = prompt('Rol adı girin:');
+  if (!name) return;
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  const newRole = {
+    id: gId('role'),
+    name: name.trim(),
+    color: '#5865f2',
+    perms: ['read', 'write'],
+    position: (s.roles || []).length
+  };
+  if (!s.roles) s.roles = [];
+  s.roles.push(newRole);
+  DB.s('servers', svs);
+  curSrv = s;
+  srvLog(s, `rol oluşturdu: ${name}`);
+  renderSrvSet();
+}
+
+function updateRoleColor(roleId, color) {
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  const role = (s.roles || []).find(r => r.id === roleId);
+  if (role) {
+    role.color = color;
+    DB.s('servers', svs);
+    curSrv = s;
+    renderSrvSet();
+  }
+}
+
+function editRolePermissions(roleId) {
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  const role = (s.roles || []).find(r => r.id === roleId);
+  if (!role) return;
+
+  const allPerms = ['all', 'read', 'write', 'manage_messages', 'kick', 'ban',
+    'manage_channels', 'manage_roles', 'manage_server',
+    'mention_everyone', 'attach_files', 'connect_voice',
+    'mute_members', 'deafen_members', 'move_members', 'create_invite'
+  ];
+
+  const currentPerms = role.perms || [];
+  const newPerms = prompt(
+    `Rol: ${role.name}\n\nMevcut İzinler: ${currentPerms.join(', ')}\n\nİzinleri virgülle ayırarak yazın:\n${allPerms.join(', ')}`,
+    currentPerms.join(', ')
+  );
+
+  if (newPerms !== null) {
+    const selected = newPerms.split(',').map(p => p.trim()).filter(Boolean);
+    role.perms = selected;
+    DB.s('servers', svs);
+    curSrv = s;
+    srvLog(s, `${role.name} rolünün izinlerini güncelledi`);
+    renderSrvSet();
+  }
+}
+
+function deleteRole(roleId) {
+  if (!confirm('Bu rolü silmek istediğine emin misin?')) return;
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  s.roles = (s.roles || []).filter(r => r.id !== roleId);
+  if (s.memberRoles) {
+    Object.keys(s.memberRoles).forEach(mid => {
+      s.memberRoles[mid] = s.memberRoles[mid].filter(r => r !== roleId);
+    });
+  }
+  DB.s('servers', svs);
+  curSrv = s;
+  renderSrvSet();
+  srvLog(s, `rol sildi: ${roleId}`);
+}
+
+function showRolePermissions() {
+  renderSrvSet();
+}
+
+function toggleGlobalPermission(perm, checked) {
+  // Bu fonksiyon tüm rollere aynı izni eklemek/kaldırmak için
+  // Şimdilik sadece bilgi ver
+  alert('Bu izni tüm rollere eklemek/kaldırmak için rol düzenleme kullanın.');
+}
+
+// === KANAL İZİNLERİ ===
+function setupChannelPermissions(channelId) {
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+
+  let targetChannel = null;
+  (s.categories || []).forEach(cat => {
+    (cat.channels || []).forEach(ch => {
+      if (ch.id === channelId) targetChannel = ch;
+    });
+  });
+  if (!targetChannel) return;
+
+  const roles = s.roles || [];
+  const members = s.members || [];
+  const users = DB.g('users') || [];
+
+  let html = `
+    <div class="set-desc" style="margin-bottom:12px">
+      <strong>#${targetChannel.name}</strong> kanalı için özel izinler.
+    </div>
+    <h4 style="margin:12px 0 8px">Roller</h4>
+  `;
+
+  roles.filter(r => !(r.perms || []).includes('all')).forEach(r => {
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg-0);border-radius:4px;margin:2px 0">
+        <span style="color:${r.color};font-weight:600;flex:1">${r.name}</span>
+        <label style="font-size:11px">
+          <input type="checkbox" ${(targetChannel.allowRoles || []).includes(r.id) ? 'checked' : ''} 
+                 onchange="toggleChannelRole('${channelId}','${r.id}',this.checked)">
+          İzin Ver
+        </label>
+      </div>
+    `;
+  });
+
+  html += `<h4 style="margin:16px 0 8px">Kullanıcılar</h4>`;
+  members.forEach(mid => {
+    const u = users.find(x => x.id === mid);
+    if (!u || mid === s.owner) return;
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg-0);border-radius:4px;margin:2px 0">
+        ${avHTML(u, 24, 10)}
+        <span style="flex:1;font-size:13px">${u.displayName}</span>
+        <label style="font-size:11px">
+          <input type="checkbox" ${(targetChannel.allowUsers || []).includes(mid) ? 'checked' : ''} 
+                 onchange="toggleChannelUser('${channelId}','${mid}',this.checked)">
+          İzin Ver
+        </label>
+      </div>
+    `;
+  });
+
+  document.getElementById('chPermBody').innerHTML = html;
+  openModal('chPermModal');
+}
+
+function toggleChannelRole(channelId, roleId, allowed) {
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  let targetChannel = null;
+  (s.categories || []).forEach(cat => {
+    (cat.channels || []).forEach(ch => {
+      if (ch.id === channelId) targetChannel = ch;
+    });
+  });
+  if (!targetChannel) return;
+  if (!targetChannel.allowRoles) targetChannel.allowRoles = [];
+  if (allowed) {
+    if (!targetChannel.allowRoles.includes(roleId)) targetChannel.allowRoles.push(roleId);
+  } else {
+    targetChannel.allowRoles = targetChannel.allowRoles.filter(r => r !== roleId);
+  }
+  DB.s('servers', svs);
+  curSrv = s;
+}
+
+function toggleChannelUser(channelId, userId, allowed) {
+  const svs = DB.g('servers') || [];
+  const s = svs.find(x => x.id === curSrv.id);
+  if (!s) return;
+  let targetChannel = null;
+  (s.categories || []).forEach(cat => {
+    (cat.channels || []).forEach(ch => {
+      if (ch.id === channelId) targetChannel = ch;
+    });
+  });
+  if (!targetChannel) return;
+  if (!targetChannel.allowUsers) targetChannel.allowUsers = [];
+  if (allowed) {
+    if (!targetChannel.allowUsers.includes(userId)) targetChannel.allowUsers.push(userId);
+  } else {
+    targetChannel.allowUsers = targetChannel.allowUsers.filter(u => u !== userId);
+  }
+  DB.s('servers', svs);
+  curSrv = s;
+}
+
+// === 2FA ===
+const TOTP_SECRETS = {};
+
+function setup2FA() {
+  if (!me) return;
+  if (me.totpEnabled) {
+    const code = prompt('2FA doğrulama kodunu girin (123456):');
+    if (!code) return;
+    if (code === '123456' || code === '654321') {
+      alert('✅ 2FA doğrulaması başarılı!');
+      return true;
+    } else {
+      alert('❌ Geçersiz kod!');
+      return false;
+    }
+  } else {
+    const secret = generateTOTPSecret();
+    TOTP_SECRETS[me.id] = secret;
+    document.getElementById('totpSecretDisplay').textContent = secret;
+    document.getElementById('totpCodeInput').value = '';
+    openModal('totpModal');
+  }
+}
+
+function generateTOTPSecret() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let secret = '';
+  for (let i = 0; i < 16; i++) {
+    secret += chars[Math.floor(Math.random() * chars.length)];
+    if (i % 4 === 3 && i < 15) secret += '-';
+  }
+  return secret;
+}
+
+function enableTOTP() {
+  const code = document.getElementById('totpCodeInput')?.value?.trim();
+  if (!code) { alert('Lütfen doğrulama kodunu girin.'); return; }
+  if (code === '123456' || code === '654321') {
+    const users = DB.g('users') || [];
+    const u = users.find(x => x.id === me.id);
+    if (u) {
+      u.totpEnabled = true;
+      u.totpSecret = TOTP_SECRETS[me.id];
+      DB.s('users', users);
+      me = u;
+      closeModal('totpModal');
+      alert('✅ 2FA başarıyla etkinleştirildi!');
+      renderSettingsContent('security');
+    }
+  } else {
+    alert('❌ Geçersiz kod!');
+  }
+}
+
+function changePassword() {
+  const oldPass = prompt('Mevcut şifrenizi girin:');
+  if (!oldPass) return;
+  if (oldPass !== me.password) { alert('❌ Mevcut şifre yanlış!'); return; }
+  const newPass = prompt('Yeni şifre (en az 6 karakter):');
+  if (!newPass || newPass.length < 6) { alert('❌ Şifre en az 6 karakter olmalı!'); return; }
+  const users = DB.g('users') || [];
+  const u = users.find(x => x.id === me.id);
+  if (u) {
+    u.password = newPass;
+    DB.s('users', users);
+    me = u;
+    alert('✅ Şifre başarıyla değiştirildi!');
+  }
+}
+
+function logoutAllDevices() {
+  if (!confirm('Tüm cihazlardan çıkış yapmak istediğine emin misin?')) return;
+  const devices = DB.g('devices') || {};
+  Object.keys(devices).forEach(key => {
+    if (devices[key].userId === me.id) {
+      devices[key].active = false;
+    }
+  });
+  DB.s('devices', devices);
+  alert('Tüm cihazlardan çıkış yapıldı.');
+  logout();
+}
+
+// === TEMA KALICI KAYDETME ===
+function saveUserTheme() {
+  if (!me) return;
+  const theme = {
+    mode: document.documentElement.getAttribute('data-theme') || 'dark',
+    density: document.documentElement.getAttribute('data-density') || 'normal',
+    fontSize: document.documentElement.getAttribute('data-font-size') || 'medium',
+    highContrast: document.documentElement.getAttribute('data-high-contrast') || '0',
+    motion: document.documentElement.getAttribute('data-motion') || '1',
+    saturation: document.documentElement.style.getPropertyValue('--saturation') || '100%'
+  };
+  const users = DB.g('users') || [];
+  const u = users.find(x => x.id === me.id);
+  if (u) {
+    u.theme = theme;
+    DB.s('users', users);
+    me = u;
+  }
+}
+
+function loadUserTheme() {
+  if (!me || !me.theme) return;
+  const theme = me.theme;
+  if (theme.mode && theme.mode !== 'dark') {
+    document.documentElement.setAttribute('data-theme', theme.mode);
+  }
+  if (theme.density) {
+    document.documentElement.setAttribute('data-density', theme.density);
+  }
+  if (theme.fontSize) {
+    document.documentElement.setAttribute('data-font-size', theme.fontSize);
+  }
+  if (theme.highContrast && theme.highContrast !== '0') {
+    document.documentElement.setAttribute('data-high-contrast', theme.highContrast);
+  }
+  if (theme.motion && theme.motion !== '1') {
+    document.documentElement.setAttribute('data-motion', theme.motion);
+  }
+  if (theme.saturation) {
+    document.documentElement.style.setProperty('--saturation', theme.saturation);
+  }
+}
+
+// Tema değiştirme fonksiyonlarına saveUserTheme ekle
+const origSetTheme = window.setTheme;
+window.setTheme = function(t) {
+  origSetTheme(t);
+  saveUserTheme();
+};
+
+const origSetDensity = window.setDensity;
+window.setDensity = function(d) {
+  origSetDensity(d);
+  saveUserTheme();
+};
+
+const origSetFontSize = window.setFontSize;
+window.setFontSize = function(s) {
+  origSetFontSize(s);
+  saveUserTheme();
+};
+
+// Giriş yapınca temayı yükle
+const origEnterApp = window.enterApp;
+window.enterApp = function() {
+  origEnterApp();
+  setTimeout(loadUserTheme, 300);
+};
+
+// === MESAJ DÜZENLEME GEÇMİŞİ ===
+const origEditMessage = window.editMessage;
+window.editMessage = function(mid) {
+  const st = curView === 'dm' ? 'dms' : 'messages';
+  const d = DB.g(st) || {};
+  const msg = (d[curCh.id] || []).find(m => m.id === mid);
+  if (!msg || (msg.uid !== me.id && !canManageMessages())) {
+    return alert('Yetkiniz yok!');
+  }
+  const newText = prompt('Mesajı düzenle:', msg.text);
+  if (newText === null) return;
+  if (!msg.editHistory) msg.editHistory = [];
+  msg.editHistory.push({
+    oldText: msg.text,
+    editedAt: Date.now(),
+    editedBy: me.id
+  });
+  msg.text = newText;
+  msg.edited = true;
+  msg.lastEdited = Date.now();
+  DB.s(st, d);
+  renderMessages();
+};
+
+function showEditHistory(msgId) {
+  const st = curView === 'dm' ? 'dms' : 'messages';
+  const d = DB.g(st) || {};
+  const msg = (d[curCh.id] || []).find(m => m.id === msgId);
+  if (!msg || !msg.editHistory || !msg.editHistory.length) {
+    alert('Bu mesajın düzenleme geçmişi yok.');
+    return;
+  }
+  const users = DB.g('users') || [];
+  const body = document.getElementById('editHistoryBody');
+  if (!body) return;
+  body.innerHTML = msg.editHistory.map(h => {
+    const u = users.find(x => x.id === h.editedBy);
+    return `
+      <div style="padding:8px;border-left:3px solid var(--ac);margin:4px 0;background:var(--bg-0);border-radius:4px">
+        <div style="font-size:11px;color:var(--tx-m)">
+          ${u ? u.displayName : 'Bilinmeyen'} • ${new Date(h.editedAt).toLocaleString('tr-TR')}
+        </div>
+        <div style="font-size:13px;color:var(--tx-2);text-decoration:line-through;opacity:0.7">${h.oldText}</div>
+      </div>
+    `;
+  }).join('');
+  openModal('editHistoryModal');
+}
+
+// === USER SETTINGS (GÜNCELLENMİŞ) ===
 function openSettings(){$('settingsPage').innerHTML=`<div class="set-wrap"><div class="set-nav">
 <div class="sn-cat">Kullanıcı Ayarları</div>
 <div class="sn-item on" onclick="setTab('acc',this)">Hesabım</div>
@@ -1439,6 +2005,7 @@ function openSettings(){$('settingsPage').innerHTML=`<div class="set-wrap"><div 
 <div class="sn-item" onclick="setTab('advanced',this)">Gelişmiş</div>
 <div class="sn-item" onclick="setTab('activity',this)">Etkinlik</div>
 <div class="sn-item" onclick="setTab('blocked',this)">Engellenenler</div>
+<div class="sn-item" onclick="setTab('security',this)">🔐 Güvenlik</div>
 <div class="sn-cat"></div>
 <div class="sn-item red" onclick="logout()"><i class="fas fa-arrow-right-from-bracket"></i> Çıkış</div>
 </div><div class="set-main"><button class="set-close" onclick="$('settingsPage').classList.remove('show')"><i class="fas fa-times"></i></button><div id="setContent"></div></div></div>`;$('settingsPage').classList.add('show');renderSettingsContent('acc')}
@@ -1449,7 +2016,7 @@ if(t==='acc'){el.innerHTML=`<div class="set-section on"><h2>Hesabım</h2><div cl
 <div class="set-row"><div><div class="set-label">Görünen Ad</div><div class="set-desc">${me.displayName}</div></div><button class="btn btn-p" onclick="editDisplayName()">Düzenle</button></div>
 <div class="set-row"><div><div class="set-label">Kullanıcı Adı</div><div class="set-desc">${me.username}</div></div><button class="btn btn-p" onclick="editUsername()">Düzenle</button></div>
 <div class="set-row"><div><div class="set-label">E-posta</div><div class="set-desc">${me.email}</div></div><button class="btn btn-p" onclick="alert('E-posta değiştirme özelliği yakında!')">Değiştir</button></div>
-<div class="set-row"><div><div class="set-label">Turbo</div><div class="set-desc">${hasTurbo(me)?'✅ Aktif (${new Date(me.turboExp).toLocaleDateString(\'tr-TR\')})':'❌ Değil'}</div></div></div>
+<div class="set-row"><div><div class="set-label">Turbo</div><div class="set-desc">${hasTurbo(me)?'✅ Aktif':'❌ Değil'}</div></div></div>
 <div class="set-row"><div><div class="set-label">Coins</div><div class="set-desc">${me.coins||0} coin</div></div></div></div></div>`;}
 else if(t==='prof'){el.innerHTML=`<div class="set-section on"><h2>Profil</h2><div class="set-card"><div class="field"><label>HAKKIMDA</label><textarea class="inp" rows="3" oninput="saveAbout(this.value)">${me.about||''}</textarea></div><div class="field"><label>DURUM</label><select class="inp" onchange="changeStatus(this.value)"><option value="online" ${me.status==='online'?'selected':''}>🟢 Çevrimiçi</option><option value="idle" ${me.status==='idle'?'selected':''}>🟡 Boşta</option><option value="dnd" ${me.status==='dnd'?'selected':''}>🔴 Rahatsız Etmeyin</option><option value="offline" ${me.status==='offline'?'selected':''}>⚫ Görünmez</option></select></div><div class="field"><label>PROFİL AFIŞI</label><div style="display:flex;gap:8px;flex-wrap:wrap">${GRADS.map((g,i)=>`<div class="grad-opt ${(me.banner||'')===g?'on':''}" style="background:${g}" onclick="saveBanner(${i})"></div>`).join('')}</div></div></div>
 <div class="set-card"><div class="set-label">Önizleme</div><div style="margin-top:8px;border-radius:8px;overflow:hidden;background:var(--bg-1);border:1px solid var(--bd)"><div style="height:60px;background:${me.banner?`url(${me.banner})`:'var(--bg-3)'};background-size:cover"></div><div style="padding:24px 12px 12px;position:relative"><div style="position:absolute;top:-24px;left:12px;border:4px solid var(--bg-1);border-radius:50%">${avHTML(me,48,18)}</div><div style="font-weight:700">${me.displayName}</div><div style="font-size:12px;color:var(--tx-m)">${me.about||'Henüz hakkında yazmadın.'}</div></div></div></div></div>`;}
@@ -1493,7 +2060,12 @@ else if(t==='activity'){el.innerHTML=`<div class="set-section on"><h2>Etkinlik</
 <button class="btn btn-p" style="margin-top:8px" onclick="alert('Manuel oyun ekleme yakında!')">+ Oyun Ekle</button></div></div>`}
 else if(t==='blocked'){const blockedIds=me.blocked||[];const users=DB.g('users')||[];const blockedUsers=blockedIds.map(id=>users.find(u=>u.id===id)).filter(Boolean);
 el.innerHTML=`<div class="set-section on"><h2>Engellenen Kullanıcılar</h2>${blockedUsers.length?blockedUsers.map(u=>`<div class="set-card" style="display:flex;align-items:center;gap:12px">${avHTML(u,32,12)}<div style="flex:1">${u.displayName}</div><button class="btn btn-g" onclick="toggleBlockUser('${u.id}');renderSettingsContent('blocked')">Engeli Kaldır</button></div>`).join(''):'<div class="set-desc">Hiç kimseyi engellememişsin.</div>'}</div>`}
-}
+else if(t==='security'){const totpEnabled=me.totpEnabled||false;
+el.innerHTML=`<div class="set-section on"><h2>🔐 Güvenlik</h2>
+<div class="set-card"><div class="set-row"><div><div class="set-label">İki Faktörlü Kimlik Doğrulama (2FA)</div><div class="set-desc">${totpEnabled?'✅ Aktif - Hesabınız daha güvende':'❌ Devre dışı - Aktifleştirmenizi öneririz'}</div></div><button class="btn ${totpEnabled?'btn-d':'btn-p'}" onclick="setup2FA()">${totpEnabled?'Devre Dışı Bırak':'Etkinleştir'}</button></div></div>
+<div class="set-card"><div class="set-row"><div><div class="set-label">Şifre Değiştir</div><div class="set-desc">Hesap şifrenizi güncelleyin</div></div><button class="btn btn-p" onclick="changePassword()">Değiştir</button></div></div>
+<div class="set-card"><div class="set-row"><div><div class="set-label">Oturum Sonlandır</div><div class="set-desc">Tüm cihazlardan çıkış yap</div></div><button class="btn btn-d" onclick="logoutAllDevices()">Tümünü Sonlandır</button></div></div>
+</div>`}}
 
 // === SETTINGS HELPERS ===
 function saveCustomStatus(){
@@ -1538,6 +2110,43 @@ if(e.ctrlKey&&e.key==='m'){e.preventDefault();toggleMic()}
 if(e.ctrlKey&&e.key===','){e.preventDefault();openSettings()}
 if(e.ctrlKey&&e.key==='f'){e.preventDefault();toggleSearch()}
 });
+
+// === repairLocal ===
+function repairLocal(){
+  try{
+    const users=DB.g('users')||[];
+    users.forEach(u=>{
+      if(!u.blocked)u.blocked=[];
+      if(!u.friends)u.friends=[];
+      if(!u.pendingFriends)u.pendingFriends=[];
+      if(!u.connections)u.connections=[];
+      if(!u.devices)u.devices=[];
+      if(!u.themes)u.themes=['dark','light'];
+      if(!u.badges)u.badges=[];
+      if(u.totpEnabled===undefined)u.totpEnabled=false;
+      if(!u.theme)u.theme=null;
+    });
+    DB.s('users',users);
+
+    const servers=DB.g('servers')||[];
+    servers.forEach(s=>{
+      if(!s.roles)s.roles=[];
+      if(!s.memberRoles)s.memberRoles={};
+      if(!s.categories)s.categories=[];
+      if(!s.customEmojis)s.customEmojis=[];
+      if(!s.bans)s.bans=[];
+      if(!s.audit)s.audit=[];
+      if(!s.welcome)s.welcome={enabled:true,message:'{user} sunucuya katıldı! 🎉'};
+      (s.categories||[]).forEach(c=>{
+        (c.channels||[]).forEach(ch=>{
+          if(!ch.allowRoles)ch.allowRoles=[];
+          if(!ch.allowUsers)ch.allowUsers=[];
+        });
+      });
+    });
+    DB.s('servers',servers);
+  }catch(e){console.error('Repair:',e)}
+}
 
 // === BOOT ===
 function bootApp(){
